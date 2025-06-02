@@ -1,0 +1,70 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Tailwind CSS Configuration and Usage
+
+## Configuration Files
+- [src/index.css](mdc:src/index.css) - Contains Tailwind directives
+- [tailwind.config.js](mdc:tailwind.config.js) - Tailwind configuration
+
+## Tailwind Directives
+The following directives are required in [src/index.css](mdc:src/index.css):
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+## Content Configuration
+Tailwind is configured to scan the following files for utility classes:
+```js
+content: [
+  "./src/**/*.{js,ts,jsx,tsx,mdx}",
+  "./components/**/*.{js,ts,jsx,tsx,mdx}",
+  "./app/**/*.{js,ts,jsx,tsx,mdx}",
+]
+```
+
+## Best Practices
+
+### Utility-First Approach
+- Use Tailwind utility classes directly in components
+- Avoid custom CSS unless necessary
+- Use component composition for reusable styles
+
+### Responsive Design
+- Use Tailwind's responsive prefixes (sm:, md:, lg:, xl:)
+- Mobile-first approach
+- Maintain consistent breakpoints
+
+### Dark Mode
+- Use dark: prefix for dark mode styles
+- Maintain color consistency
+- Test both light and dark modes
+
+### Performance
+- PurgeCSS enabled by default
+- Only used utilities are included in production
+- Keep bundle size optimized
+
+### Component Examples
+```jsx
+// Button Example
+<button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+  Click Me
+</button>
+
+// Card Example
+<div className="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md">
+  <h2 className="text-xl font-semibold mb-2">Card Title</h2>
+  <p className="text-gray-600">Card content goes here</p>
+</div>
+```
+
+### Custom Extensions
+- Extend theme in tailwind.config.js
+- Define custom colors
+- Create custom plugins when needed
+- Use @apply for complex, reusable patterns

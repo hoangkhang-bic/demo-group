@@ -1,0 +1,228 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Zustand State Management
+
+## Store Structure
+All store files should be located in:
+```
+src/
+└── store/
+    ├── index.ts        # Store exports
+    ├── useAuthStore.ts # Authentication store
+    ├── useThemeStore.ts # Theme/UI store
+    └── useDataStore.ts  # Data/API store
+```
+
+## Basic Store Template
+Template for creating a new store:
+
+```typescript
+import { create } from 'zustand'
+import { devtools, persist } from 'zustand/middleware'
+
+interface State {
+  // State types
+}
+
+interface Actions {
+  // Action types
+}
+
+const useStore = create<State & Actions>()(
+  devtools(
+    persist(
+      (set) => ({
+        // Initial state and actions
+      }),
+      {
+        name: 'store-name', // Unique name for persist storage
+      }
+    )
+  )
+)
+```
+
+## Store Best Practices
+
+### Type Safety
+- Always define interfaces for State and Actions
+- Use TypeScript's strict mode
+- Separate state and actions in the interface
+
+```typescript
+interface State {
+  count: number
+  status: 'idle' | 'loading' | 'error'
+  data: Record<string, unknown>
+}
+
+interface Actions {
+  increment: (amount: number) => void
+  setStatus: (status: State['status']) => void
+  setData: (data: State['data']) => void
+}
+```
+
+### State Updates
+- Use immutable updates
+- Utilize the `set` function correctly
+- Access previous state when needed
+
+```typescript
+set((state) => ({ count: state.count + 1 }))
+set({ status: 'loading' })
+```
+
+### Selectors
+- Use selectors for performance optimization
+- Keep selectors simple and focused
+- Memoize complex selectors
+
+```typescript
+// Component usage
+const count = useStore((state) => state.count)
+const status = useStore((state) => state.status)
+```
+
+### Middleware Usage
+- Use `devtools` for development debugging
+- Implement `persist` for state persistence
+- Add custom middleware as needed
+
+```typescript
+const useStore = create<State & Actions>()(
+  devtools(
+    persist(
+      (set) => ({
+        // store implementation
+      }),
+      {
+        name: 'store-name',
+        storage: localStorage,
+      }
+    )
+  )
+)
+```
+
+### Async Actions
+- Handle loading states
+- Use try/catch for error handling
+- Update state appropriately
+
+```typescript
+const useDataStore = create<DataState & DataActions>((set) => ({
+  fetchData: async () => {
+    set({ status: 'loading' })
+    try {
+      const response = await fetch('/api/data')
+      const data = await response.json()
+      set({ data, status: 'idle' })
+    } catch (error) {
+      set({ status: 'error' })
+    }
+  }
+}))
+```
+
+### Store Composition
+- Split stores by domain
+- Use store slices when needed
+- Combine stores carefully
+
+```typescript
+// Combining stores
+const useCombinedStore = create((set) => ({
+  ...useAuthStore(set),
+  ...useThemeStore(set),
+}))
+```
+
+## Component Integration
+
+### Basic Usage
+```typescript
+function Component() {
+  const count = useStore((state) => state.count)
+  const increment = useStore((state) => state.increment)
+  
+  return (
+    <button onClick={() => increment(1)}>
+      Count: {count}
+    </button>
+  )
+}
+```
+
+### With Multiple Selectors
+```typescript
+function Component() {
+  const { count, status, increment } = useStore(
+    (state) => ({
+      count: state.count,
+      status: state.status,
+      increment: state.increment,
+    }),
+    shallow
+  )
+}
+```
+
+## Development Tools
+
+### Redux DevTools
+- Install Redux DevTools browser extension
+- Enabled automatically with devtools middleware
+- Monitor state changes in DevTools
+
+### Storage
+- Use persist middleware for localStorage
+- Configure storage adapters as needed
+- Handle storage versioning
+
+```typescript
+const useStore = create(
+  persist(
+    (set) => ({
+      // store implementation
+    }),
+    {
+      name: 'store-name',
+      version: 1,
+      storage: localStorage,
+      partialize: (state) => ({ count: state.count }),
+    }
+  )
+)
+```
+
+## Testing
+
+### Store Testing
+```typescript
+describe('store', () => {
+  it('should update count', () => {
+    const { getState, setState } = useStore
+    setState({ count: 0 })
+    expect(getState().count).toBe(0)
+  })
+})
+```
+
+### Component Testing
+```typescript
+import { renderHook, act } from '@testing-library/react'
+
+test('should increment counter', () => {
+  const { result } = renderHook(() => useStore())
+  
+  act(() => {
+    result.current.increment(1)
+  })
+  
+  expect(result.current.count).toBe(1)
+})
+```

@@ -1,0 +1,266 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Zustand Common Patterns and Examples
+
+## Store Organization
+
+### Authentication Store
+```typescript
+// src/store/useAuthStore.ts
+interface AuthState {
+  user: User | null
+  isAuthenticated: boolean
+  token: string | null
+}
+
+interface AuthActions {
+  login: (credentials: Credentials) => Promise<void>
+  logout: () => void
+  updateUser: (user: Partial<User>) => void
+}
+
+const useAuthStore = create<AuthState & AuthActions>()(
+  devtools(
+    persist(
+      (set) => ({
+        user: null,
+        isAuthenticated: false,
+        token: null,
+        login: async (credentials) => {
+          set({ isAuthenticated: false })
+          // Implementation
+        },
+        logout: () => set({ user: null, isAuthenticated: false, token: null }),
+        updateUser: (userData) => 
+          set((state) => ({
+            user: state.user ? { ...state.user, ...userData } : null
+          }))
+      }),
+      {
+        name: 'auth-storage'
+      }
+    )
+  )
+)
+```
+
+### Theme Store
+```typescript
+// src/store/useThemeStore.ts
+interface ThemeState {
+  mode: 'light' | 'dark'
+  primaryColor: string
+  fontSize: number
+}
+
+interface ThemeActions {
+  toggleTheme: () => void
+  setPrimaryColor: (color: string) => void
+  setFontSize: (size: number) => void
+}
+
+const useThemeStore = create<ThemeState & ThemeActions>()(
+  persist(
+    (set) => ({
+      mode: 'light',
+      primaryColor: '#007AFF',
+      fontSize: 16,
+      toggleTheme: () => 
+        set((state) => ({ 
+          mode: state.mode === 'light' ? 'dark' : 'light' 
+        })),
+      setPrimaryColor: (color) => set({ primaryColor: color }),
+      setFontSize: (size) => set({ fontSize: size })
+    }),
+    {
+      name: 'theme-storage'
+    }
+  )
+)
+```
+
+### Data Store
+```typescript
+// src/store/useDataStore.ts
+interface DataState {
+  items: Item[]
+  status: 'idle' | 'loading' | 'error'
+  error: string | null
+}
+
+interface DataActions {
+  fetchItems: () => Promise<void>
+  addItem: (item: Item) => void
+  removeItem: (id: string) => void
+  updateItem: (id: string, updates: Partial<Item>) => void
+}
+
+const useDataStore = create<DataState & DataActions>((set) => ({
+  items: [],
+  status: 'idle',
+  error: null,
+  fetchItems: async () => {
+    set({ status: 'loading' })
+    try {
+      const response = await fetch('/api/items')
+      const items = await response.json()
+      set({ items, status: 'idle' })
+    } catch (error) {
+      set({ status: 'error', error: error.message })
+    }
+  },
+  addItem: (item) => 
+    set((state) => ({ items: [...state.items, item] })),
+  removeItem: (id) => 
+    set((state) => ({
+      items: state.items.filter(item => item.id !== id)
+    })),
+  updateItem: (id, updates) =>
+    set((state) => ({
+      items: state.items.map(item =>
+        item.id === id ? { ...item, ...updates } : item
+      )
+    }))
+}))
+```
+
+## Component Usage Examples
+
+### Authentication Component
+```typescript
+function LoginComponent() {
+  const { login, isAuthenticated } = useAuthStore(
+    (state) => ({
+      login: state.login,
+      isAuthenticated: state.isAuthenticated
+    }),
+    shallow
+  )
+
+  const handleLogin = async (credentials: Credentials) => {
+    await login(credentials)
+  }
+
+  return isAuthenticated ? <Redirect to="/dashboard" /> : <LoginForm onSubmit={handleLogin} />
+}
+```
+
+### Theme Component
+```typescript
+function ThemeToggle() {
+  const { mode, toggleTheme } = useThemeStore(
+    (state) => ({
+      mode: state.mode,
+      toggleTheme: state.toggleTheme
+    })
+  )
+
+  return (
+    <button onClick={toggleTheme}>
+      Current theme: {mode}
+    </button>
+  )
+}
+```
+
+### Data Component
+```typescript
+function ItemList() {
+  const { items, status, fetchItems } = useDataStore(
+    (state) => ({
+      items: state.items,
+      status: state.status,
+      fetchItems: state.fetchItems
+    })
+  )
+
+  useEffect(() => {
+    fetchItems()
+  }, [fetchItems])
+
+  if (status === 'loading') return <Spinner />
+  if (status === 'error') return <Error />
+
+  return (
+    <ul>
+      {items.map(item => (
+        <ItemComponent key={item.id} item={item} />
+      ))}
+    </ul>
+  )
+}
+```
+
+## Store Composition Example
+```typescript
+// src/store/index.ts
+import { create } from 'zustand'
+import { devtools, persist } from 'zustand/middleware'
+
+const createRootStore = (set) => ({
+  ...createAuthSlice(set),
+  ...createThemeSlice(set),
+  ...createDataSlice(set),
+})
+
+const useStore = create(
+  devtools(
+    persist(createRootStore, {
+      name: 'root-storage',
+      partialize: (state) => ({
+        auth: state.auth,
+        theme: state.theme,
+      })
+    })
+  )
+)
+
+export default useStore
+```
+
+## Middleware Examples
+
+### Custom Middleware
+```typescript
+const log = (config) => (set, get, api) =>
+  config(
+    (...args) => {
+      console.log('  applying', args)
+      set(...args)
+      console.log('  new state', get())
+    },
+    get,
+    api
+  )
+
+const useStore = create(
+  log(
+    devtools(
+      persist((set) => ({
+        // store implementation
+      }))
+    )
+  )
+)
+```
+
+### Action Validation
+```typescript
+const validateAction = (config) => (set, get, api) =>
+  config(
+    (...args) => {
+      if (typeof args[0] === 'function') {
+        set(...args)
+      } else if (typeof args[0] === 'object') {
+        const newState = args[0]
+        // Add validation logic here
+        set(newState)
+      }
+    },
+    get,
+    api
+  )
+```

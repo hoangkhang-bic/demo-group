@@ -1,0 +1,226 @@
+/* Layout demo styles */
+.layout-demo {
+    padding: 20px;
+}
+
+.layout-controls {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+}
+
+.layout-button {
+    padding: 8px 16px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 200ms ease-in-out;
+}
+
+.layout-button:hover {
+    border-color: #999;
+}
+
+.layout-button.active {
+    border-color: #0066cc;
+    background: #0066cc;
+    color: white;
+}
+
+/* Layout styles */
+.layout {
+    padding: 20px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.grid-item {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.grid-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.grid-item h3 {
+    margin: 12px 0 8px;
+    font-size: 18px;
+}
+
+.grid-item p {
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.grid-item .stats {
+    display: flex;
+    justify-content: space-between;
+    color: #888;
+    font-size: 14px;
+}
+
+.list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.list-item {
+    display: flex;
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.list-item img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 16px;
+}
+
+.list-item-content {
+    flex: 1;
+}
+
+.list-item h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+.list-item p {
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.list-item .stats {
+    display: flex;
+    gap: 16px;
+    color: #888;
+    font-size: 14px;
+}
+
+/* Layout transition animations */
+.layout-transition-enter {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.layout-transition-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}
+
+.layout-transition-exit {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.layout-transition-exit-active {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}
+
+/* Fade animation */
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 300ms ease-in-out;
+}
+
+.fade-exit {
+    opacity: 1;
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+}
+
+/* Slide animation */
+.slide-enter {
+    transform: translateX(-100%);
+}
+
+.slide-enter-active {
+    transform: translateX(0);
+    transition: transform 300ms ease-in-out;
+}
+
+.slide-exit {
+    transform: translateX(0);
+}
+
+.slide-exit-active {
+    transform: translateX(100%);
+    transition: transform 300ms ease-in-out;
+}
+
+/* Grid layout animation */
+.grid-item {
+    transition: all 300ms ease-in-out;
+}
+
+.grid-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.grid-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.grid-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.grid-exit-active {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+/* List layout animation */
+.list-item {
+    transition: all 300ms ease-in-out;
+}
+
+.list-enter {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.list-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.list-exit {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.list-exit-active {
+    opacity: 0;
+    transform: translateX(20px);
+}

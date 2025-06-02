@@ -1,0 +1,93 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Vite Configuration and Development
+
+## Core Configuration
+The main Vite configuration is in [vite.config.ts](mdc:vite.config.ts)
+
+## Key Features
+- Hot Module Replacement (HMR)
+- ESM-based dev server
+- Optimized builds
+- TypeScript support
+- React plugin integration
+
+## Development Server
+- Default port: 5173
+- Automatic dependency optimization
+- Fast refresh for React components
+- Static asset handling
+
+## Build Configuration
+```ts
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    minify: 'terser',
+  },
+  resolve: {
+    alias: {
+      '@': '/src'
+    }
+  }
+})
+```
+
+## Environment Variables
+- `.env` - Base environment variables
+- `.env.development` - Development-specific variables
+- `.env.production` - Production-specific variables
+- Access via `import.meta.env.VITE_*`
+
+## Asset Handling
+- Static assets in `/public`
+- Imported assets are processed
+- URL imports supported
+- SVG components available
+
+## Performance Optimization
+- Code splitting
+- Dynamic imports
+- Tree shaking
+- Asset optimization
+
+## Development Guidelines
+
+### HMR Best Practices
+- Use `vite` dev server
+- Enable React Fast Refresh
+- Preserve component state
+- Watch for file changes
+
+### Build Process
+- Production optimization
+- Chunk splitting
+- CSS code splitting
+- Asset compression
+
+### Troubleshooting
+- Clear cache: `rm -rf node_modules/.vite`
+- Check port conflicts
+- Verify dependencies
+- Monitor build size
+
+### Scripts
+```json
+{
+  "dev": "vite",
+  "build": "tsc -b && vite build",
+  "preview": "vite preview",
+  "lint": "eslint ."
+}
+```
+
+### ESM Compatibility
+- Use `.mjs` or `type: "module"`
+- Import with file extensions
+- Dynamic imports supported
+- Node.js compatibility

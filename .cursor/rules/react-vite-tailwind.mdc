@@ -1,0 +1,69 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# React + Vite + Tailwind CSS Project Structure
+
+## Core Files
+- Entry point: [index.html](mdc:index.html) - The main HTML entry point
+- Main component: [src/App.tsx](mdc:src/App.tsx) - Root React component
+- Entry script: [src/main.tsx](mdc:src/main.tsx) - Application bootstrapping
+- Global styles: [src/index.css](mdc:src/index.css) - Global styles and Tailwind directives
+
+## Configuration Files
+- [vite.config.ts](mdc:vite.config.ts) - Vite build and development configuration
+- [tsconfig.json](mdc:tsconfig.json) - Base TypeScript configuration
+- [tsconfig.node.json](mdc:tsconfig.node.json) - Node-specific TypeScript settings
+- [tsconfig.app.json](mdc:tsconfig.app.json) - Application TypeScript settings
+- [eslint.config.js](mdc:eslint.config.js) - ESLint configuration
+- [package.json](mdc:package.json) - Project dependencies and scripts
+
+## Project Structure
+```
+demo-group/
+├── src/
+│   ├── assets/        # Static assets and resources
+│   ├── components/    # Reusable React components
+│   ├── page/         # Page-level components
+│   ├── App.tsx       # Root component
+│   ├── App.css       # App-specific styles
+│   ├── index.css     # Global styles & Tailwind
+│   └── main.tsx      # Application entry
+├── public/           # Static public assets
+└── various config files
+```
+
+## Key Dependencies
+- React 19.x
+- Vite 6.x
+- TailwindCSS 4.x
+- TypeScript 5.8.x
+- ESLint 9.x
+
+## Development Guidelines
+
+### TypeScript
+- Strict mode enabled
+- Node types included
+- Modern ESM modules
+- Bundler-style module resolution
+
+### Styling
+- TailwindCSS for utility-first styling
+- PostCSS for processing
+- Global styles in index.css
+- Component-specific styles when needed
+
+### Best Practices
+- Use TypeScript for type safety
+- Follow ESLint rules
+- Organize components logically
+- Keep components small and focused
+- Use proper file naming conventions
+
+### Scripts
+- `dev`: Development server
+- `build`: Production build
+- `preview`: Preview production build
+- `lint`: Run ESLint checks
