@@ -1,0 +1,10 @@
+{
+  "appId": "com.demogroup",
+  "appName": "demo-group",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false
+    }
+  }
+}
