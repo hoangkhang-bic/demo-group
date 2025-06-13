@@ -19,14 +19,17 @@
             "@assets/*": [
                 "src/assets/*"
             ],
-            "@utils/*": [
-                "src/utils/*"
+            "@css/*": [
+                "src/css/*"
             ],
             "@hooks/*": [
                 "src/hooks/*"
             ],
-            "@styles/*": [
-                "src/styles/*"
+            "@navigators/*": [
+                "src/navigators/*"
+            ],
+            "@utils/*": [
+                "src/utils/*"
             ]
         }
     },

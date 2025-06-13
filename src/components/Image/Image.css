@@ -1,0 +1,202 @@
+/* Base Image component - React Native-like styling */
+.rn-image {
+    /* Default React Native image behavior */
+    display: block;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+    /* Default React Native behavior */
+
+    /* Prevent image distortion */
+    box-sizing: border-box;
+
+    /* Default background for loading state */
+    background-color: #f0f0f0;
+}
+
+/* SVG specific styles */
+.rn-image--svg {
+    /* Ensure SVGs scale properly */
+    width: 100%;
+    height: 100%;
+}
+
+/* For SVGs in object tags */
+object.rn-image {
+    pointer-events: none;
+    /* Prevents click events on SVG by default */
+}
+
+/* Allow SVG interaction when needed */
+object.rn-image.interactive {
+    pointer-events: auto;
+}
+
+/* SVG coloring */
+.rn-image--svg-colored path,
+.rn-image--svg-colored rect,
+.rn-image--svg-colored circle,
+.rn-image--svg-colored ellipse,
+.rn-image--svg-colored line,
+.rn-image--svg-colored polyline,
+.rn-image--svg-colored polygon {
+    /* These will be overridden by inline SVG styles or props */
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+/* Resize modes (similar to React Native) */
+.rn-image--contain {
+    object-fit: contain;
+}
+
+.rn-image--cover {
+    object-fit: cover;
+}
+
+.rn-image--stretch {
+    object-fit: fill;
+}
+
+.rn-image--center {
+    object-fit: none;
+    object-position: center;
+}
+
+.rn-image--repeat {
+    object-fit: none;
+    background-repeat: repeat;
+}
+
+/* Border radius variations */
+.rn-image--rounded-sm {
+    border-radius: 4px;
+}
+
+.rn-image--rounded-md {
+    border-radius: 8px;
+}
+
+.rn-image--rounded-lg {
+    border-radius: 16px;
+}
+
+.rn-image--rounded-full {
+    border-radius: 50%;
+}
+
+/* Aspect ratio containers (similar to React Native) */
+.rn-image-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Common aspect ratios */
+.rn-image-container--1-1 {
+    padding-top: 100%;
+    /* 1:1 aspect ratio */
+}
+
+.rn-image-container--4-3 {
+    padding-top: 75%;
+    /* 4:3 aspect ratio */
+}
+
+.rn-image-container--16-9 {
+    padding-top: 56.25%;
+    /* 16:9 aspect ratio */
+}
+
+.rn-image-container--3-2 {
+    padding-top: 66.66%;
+    /* 3:2 aspect ratio */
+}
+
+.rn-image-container--2-3 {
+    padding-top: 150%;
+    /* 2:3 aspect ratio (portrait) */
+}
+
+/* Image inside aspect ratio container */
+.rn-image-container>.rn-image,
+.rn-image-container>object {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Responsive behavior */
+@media (max-width: 576px) {
+    .rn-image--responsive-hide {
+        display: none;
+    }
+
+    .rn-image--responsive-smaller {
+        max-width: 75%;
+    }
+}
+
+/* Loading and error states */
+.rn-image--loading {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.rn-image--loaded {
+    opacity: 1;
+}
+
+.rn-image--error {
+    /* Default placeholder for error */
+    background-color: #f8d7da;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23721c24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='12' y1='8' x2='12' y2='12'%3E%3C/line%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'%3E%3C/line%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px;
+}
+
+/* Tint color (similar to React Native) */
+.rn-image--tint-overlay {
+    position: relative;
+}
+
+.rn-image--tint-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: inherit;
+    /* Will inherit the color from inline style */
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+/* Fade-in animation (optional) */
+@keyframes rnImageFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.rn-image--fade-in {
+    animation: rnImageFadeIn 0.3s ease;
+}
+
+/* Progressive loading support */
+.rn-image--progressive {
+    filter: blur(10px);
+    transition: filter 0.3s ease;
+}
+
+.rn-image--progressive.rn-image--loaded {
+    filter: blur(0);
+}
