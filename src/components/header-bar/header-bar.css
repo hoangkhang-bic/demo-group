@@ -1,0 +1,104 @@
+/* Base header styles */
+.header-bar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    width: 100%;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.header-bar__toolbar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Light mode (default) */
+:root {
+    --header-background: #ffffff;
+    --header-color: rgba(0, 0, 0, 0.87);
+    --header-border-color: rgba(0, 0, 0, 0.12);
+    --header-shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Apply theme variables */
+.header-bar {
+    background-color: var(--header-background);
+    color: var(--header-color);
+    border-bottom: 1px solid var(--header-border-color);
+}
+
+/* Platform-specific styles */
+@media (platform: android) {
+    .header-bar {
+        /* Android-specific styles */
+        --header-background: var(--header-background);
+        --header-color: var(--header-color);
+        --header-border-color: var(--header-border-color);
+    }
+}
+
+@media (platform: ios) {
+    .header-bar {
+        /* iOS-specific styles */
+        --header-background: var(--header-background);
+        --header-color: var(--header-color);
+        --header-border-color: var(--header-border-color);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .header-bar {
+        min-height: 48px;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 991px) {
+    .header-bar {
+        min-height: 56px;
+    }
+}
+
+@media (min-width: 992px) {
+    .header-bar {
+        min-height: 64px;
+    }
+}
+
+/* Platform-specific animations */
+@media (platform: android) {
+    .header-bar {
+        /* Material Design transition */
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+@media (platform: ios) {
+    .header-bar {
+        /* iOS-style transition */
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+/* Scroll behavior */
+.header-bar--scrolled {
+    box-shadow: 0 2px 4px var(--header-shadow-color);
+}
+
+/* Theme transition */
+.header-bar,
+.header-bar * {
+    transition: background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}

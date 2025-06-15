@@ -1,17 +1,9 @@
 import React from "react";
 import { IonReactRouter } from "@ionic/react-router";
-import {
-  IonRouterOutlet,
-  IonApp,
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-} from "@ionic/react";
-import { Route, Redirect } from "react-router-dom";
-import BeincomHeader from "@components/top-header";
-import HomePage from "@pages/HomePage";
+import { IonRouterOutlet, IonApp, IonPage, IonContent } from "@ionic/react";
+import { Route, Navigate } from "react-router-dom";
+import BeincomHeader from "@components/bic-components/top-header/top-header";
+import HomePage from "@/pages/HomePage";
 
 const CommunityPage: React.FC = () => (
   <IonPage>
@@ -69,15 +61,10 @@ export const AppRouter: React.FC = () => (
     <IonReactRouter>
       <IonRouterOutlet>
         {/* Define all specific routes first */}
-        <Route path="/" component={HomePage} exact={true} />
-        <Route path="/community" component={CommunityPage} exact={true} />
-        <Route path="/delivery" component={DeliveryPage} exact={true} />
-        <Route path="/profile" component={ProfilePage} exact={true} />
-        <Route path="/wallet" component={WalletPage} exact={true} />
-        <Route path="/not-found" component={NotFoundPage} exact={true} />
+        <Route path="/" Component={HomePage} />
         {/* This will catch any unmatched routes */}
         <Route>
-          <Redirect to="/not-found" />
+          <Navigate to="/not-found" />
         </Route>
       </IonRouterOutlet>
     </IonReactRouter>

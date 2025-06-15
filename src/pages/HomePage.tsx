@@ -8,32 +8,15 @@ import {
   IonCardContent,
   IonText,
 } from "@ionic/react";
+import Page from "@/components/page/page";
+import TopHeader from "@/components/bic-components/top-header/top-header";
+import View from "@/components/View/View";
 
 const HomePage: React.FC = () => {
   return (
-    <IonPage>
-      <IonContent fullscreen>
-        <div className="ion-padding">
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>Welcome to Ionic React</IonCardTitle>
-            </IonCardHeader>
-            <IonCardContent>
-              <IonText>
-                <p>
-                  This is a sample home page built with Ionic components. The
-                  header has been successfully refactored to use Ionic
-                  components.
-                </p>
-                <p>
-                  You can navigate to other pages using the icons in the header.
-                </p>
-              </IonText>
-            </IonCardContent>
-          </IonCard>
-        </div>
-      </IonContent>
-    </IonPage>
+    <Page fullscreen>
+      <TopHeader />
+    </Page>
   );
 };
 

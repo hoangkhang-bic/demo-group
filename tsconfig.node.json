@@ -30,6 +30,15 @@
             ],
             "@utils/*": [
                 "src/utils/*"
+            ],
+            "@assets/images/*": [
+                "src/assets/images/*"
+            ],
+            "@services/*": [
+                "src/servic es/*"
+            ],
+            "@store/*": [
+                "src/store/*"
             ]
         }
     },

@@ -44,6 +44,12 @@
             ],
             "@utils/*": [
                 "src/utils/*"
+            ],
+            "@services/*": [
+                "src/services/*"
+            ],
+            "@store/*": [
+                "src/store/*"
             ]
         }
     },

@@ -1,0 +1,134 @@
+.logo {
+    display: block;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+.image-logo {
+    display: block;
+    height: auto;
+    width: 100%;
+    object-fit: contain;
+    transition: all 0.3s ease;
+}
+
+/* Small screens (phones) */
+@media (max-width: 576px) {
+    .search-bar {
+        max-width: 100%;
+        padding: 6px 12px;
+        margin: 0 8px;
+    }
+
+    .image-logo {
+        display: none;
+    }
+}
+
+/* Medium screens (tablets) */
+@media (min-width: 577px) and (max-width: 991px) {
+    .search-bar {
+        max-width: 450px;
+        padding: 8px 14px;
+    }
+
+    .image-logo {
+        max-width: 120px;
+    }
+}
+
+/* Large screens (desktops) */
+@media (min-width: 992px) {
+    .search-bar {
+        padding: 10px 20px;
+    }
+
+    .image-logo {
+        max-width: 150px;
+    }
+}
+
+/* Focus state */
+.search-bar:focus-within {
+    box-shadow: 0 0 0 2px var(--ion-color-primary);
+}
+
+/* Hover state */
+.search-bar:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.desktop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--header-background);
+}
+
+.mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--header-background);
+}
+
+.search-bar {
+    height: 40px;
+    width: 1000px
+}
+
+.search-bar:focus-within {
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-icon {
+    color: #666;
+    font-size: 20px;
+    margin-right: 8px;
+}
+
+.search-input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    background: none;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+/* Mobile styles */
+@media (max-width: 576px) {
+    .search-bar {
+        height: 36px;
+        max-width: none;
+    }
+
+    .search-icon {
+        font-size: 18px;
+    }
+
+    .search-input {
+        font-size: 13px;
+    }
+}
+
+.search-input {
+    width: 100%;
+    height: 100%;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}

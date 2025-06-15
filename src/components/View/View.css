@@ -1,15 +1,5 @@
 /* Base View component - React Native-like styling */
-.container-view {
-    /* Full dimensions */
-    height: 100%;
-    width: 100%;
-
-    /* Default background */
-    background-color: var(--ion-background-color, #ffffff);
-
-    /* Default padding - will be responsive */
-    padding: var(--ion-padding);
-
+.rn-view {
     /* Box model */
     box-sizing: border-box;
 
@@ -19,72 +9,39 @@
 }
 
 /* Variations */
-.container-view--primary {
-    background-color: var(--ion-color-primary);
-    color: var(--ion-color-primary-contrast);
+.rn-view--primary {
+    background-color: var(--ion-color-primary, #3880ff);
+    color: var(--ion-color-primary-contrast, #ffffff);
 }
 
-.container-view--secondary {
-    background-color: var(--ion-color-secondary);
-    color: var(--ion-color-secondary-contrast);
+.rn-view--secondary {
+    background-color: var(--ion-color-secondary, #3dc2ff);
+    color: var(--ion-color-secondary-contrast, #ffffff);
 }
 
-.container-view--light {
-    background-color: var(--ion-color-light);
-    color: var(--ion-color-light-contrast);
+.rn-view--light {
+    background-color: var(--ion-color-light, #f4f5f8);
+    color: var(--ion-color-light-contrast, #000000);
 }
 
-.container-view--dark {
-    background-color: var(--ion-color-dark);
-    color: var(--ion-color-dark-contrast);
+.rn-view--dark {
+    background-color: var(--ion-color-dark, #222428);
+    color: var(--ion-color-dark-contrast, #ffffff);
 }
 
-/* Padding variations */
-.container-view--padding-none {
-    padding: 0;
-}
-
-.container-view--padding-small {
-    padding: var(--ion-padding-small, 8px);
-}
-
-.container-view--padding-large {
-    padding: var(--ion-padding-large, 24px);
-}
-
-/* Flex direction options (like React Native) */
-.container-view--row {
+/* Flex direction options */
+.rn-view--row {
     flex-direction: row;
 }
 
-.container-view--column {
-    flex-direction: column;
-}
-
-/* Alignment options (like React Native) */
-.container-view--center {
+/* Alignment options */
+.rn-view--center {
     align-items: center;
     justify-content: center;
 }
 
-.container-view--start {
-    align-items: flex-start;
-}
-
-.container-view--end {
-    align-items: flex-end;
-}
-
-.container-view--justify-between {
-    justify-content: space-between;
-}
-
-.container-view--justify-around {
-    justify-content: space-around;
-}
-
-/* Safe area insets for mobile devices (similar to React Native SafeAreaView) */
-.container-view--safe-area {
+/* Safe area insets for mobile devices */
+.rn-view--safe-area {
     padding-top: env(safe-area-inset-top);
     padding-right: env(safe-area-inset-right);
     padding-bottom: env(safe-area-inset-bottom);
@@ -93,73 +50,62 @@
 
 /* Responsive adjustments */
 @media (max-width: 576px) {
-    .container-view {
-        padding: var(--ion-padding-small, 8px);
-    }
-
-    .container-view--row-mobile {
+    .rn-view--row {
         flex-direction: column;
-        /* Stack items on mobile */
-    }
-}
-
-@media (min-width: 992px) {
-    .container-view {
-        padding: var(--ion-padding-large, 24px);
     }
 }
 
 /* Utility classes for common React Native-like props */
-.flex-1 {
+.rn-view--flex-1 {
     flex: 1;
 }
 
-.flex-grow-0 {
+.rn-view--flex-grow-0 {
     flex-grow: 0;
 }
 
-.flex-wrap {
+.rn-view--flex-wrap {
     flex-wrap: wrap;
 }
 
-.overflow-hidden {
+.rn-view--overflow-hidden {
     overflow: hidden;
 }
 
-.position-absolute {
+.rn-view--position-absolute {
     position: absolute;
 }
 
-.position-relative {
+.rn-view--position-relative {
     position: relative;
 }
 
 /* Shadow utilities (similar to React Native elevation) */
-.shadow-sm {
+.rn-view--shadow-sm {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.shadow-md {
+.rn-view--shadow-md {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.shadow-lg {
+.rn-view--shadow-lg {
     box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Border radius utilities */
-.rounded-sm {
+.rn-view--rounded-sm {
     border-radius: 4px;
 }
 
-.rounded-md {
+.rn-view--rounded-md {
     border-radius: 8px;
 }
 
-.rounded-lg {
+.rn-view--rounded-lg {
     border-radius: 16px;
 }
 
-.rounded-full {
+.rn-view--rounded-full {
     border-radius: 9999px;
 }

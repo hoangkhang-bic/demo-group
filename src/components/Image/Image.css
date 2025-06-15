@@ -1,4 +1,6 @@
 /* Base Image component - React Native-like styling */
+@import '@/css/style.css';
+
 .rn-image {
     /* Default React Native image behavior */
     display: block;
@@ -11,7 +13,7 @@
     box-sizing: border-box;
 
     /* Default background for loading state */
-    background-color: #f0f0f0;
+    background-color: var(--ion-color-transparent);
 }
 
 /* SVG specific styles */

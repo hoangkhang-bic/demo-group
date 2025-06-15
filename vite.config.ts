@@ -19,8 +19,10 @@ export default defineConfig({
       '@css': path.resolve(__dirname, './src/css'),
       '@hooks': path.resolve(__dirname, './src/hooks'),
       '@navigators': path.resolve(__dirname, './src/navigators'),
-      '@utils': path.resolve(__dirname, './src/utils')
-    }
-  }
+      '@utils': path.resolve(__dirname, './src/utils'),
+      '@assets/images': path.resolve(__dirname, './src/assets/images'),
+      '@services': path.resolve(__dirname, './src/services'),
+      '@store': path.resolve(__dirname, './src/store'),
+    },
+  },
 });
- 
