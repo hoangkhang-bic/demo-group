@@ -11,6 +11,26 @@
     -webkit-overflow-scrolling: touch;
 }
 
+/* Disable transitions and animations */
+.page-transition--no-animation {
+    will-change: auto;
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Disable touch feedback */
+.page-transition--no-touch-feedback {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.page-transition--no-touch-feedback::after {
+    display: none !important;
+}
+
+.page-transition--no-touch-feedback:active::after {
+    opacity: 0 !important;
+}
+
 /* Material Design transition timing */
 .page-transition {
     --transition-duration: 300ms;
@@ -63,13 +83,6 @@
     padding-left: env(safe-area-inset-left);
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .page-transition {
-        --background-color: #121212;
-    }
-}
-
 /* Prevent text selection during swipe */
 .page-transition * {
     -webkit-touch-callout: none;
@@ -89,20 +102,16 @@
     user-select: text;
 }
 
-/* Material Design ripple effect for touch feedback */
+/* Disable tap highlight and touch feedback */
+.page-transition {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove ripple effect */
 .page-transition::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transition: opacity 0.2s;
-    pointer-events: none;
+    display: none;
 }
 
 .page-transition:active::after {
-    opacity: 1;
+    opacity: 0;
 }

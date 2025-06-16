@@ -17,6 +17,9 @@ interface HeaderBarProps {
   shadowBlur?: number;
   shadowOpacity?: number;
   showShadow?: boolean;
+  // Content props
+  contentClassName?: string;
+  contentStyle?: React.CSSProperties;
 }
 
 export default function HeaderBar({
@@ -30,6 +33,8 @@ export default function HeaderBar({
   shadowBlur = 8,
   shadowOpacity = 1,
   showShadow = true,
+  contentClassName = "",
+  contentStyle,
 }: HeaderBarProps) {
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
@@ -66,7 +71,12 @@ export default function HeaderBar({
       className={`header-bar ${className}`}
       style={{ ...style, ...platformStyles, ...customShadow }}
     >
-      <div className="header-bar__toolbar">{children}</div>
+      <div
+        className={`header-bar__toolbar ${contentClassName}`}
+        style={contentStyle}
+      >
+        {children}
+      </div>
     </header>
   );
 }

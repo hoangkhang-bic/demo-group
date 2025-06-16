@@ -1,74 +1,40 @@
 import React from "react";
-import { IonReactRouter } from "@ionic/react-router";
-import { IonRouterOutlet, IonApp, IonPage, IonContent } from "@ionic/react";
-import { Route, Navigate } from "react-router-dom";
-import BeincomHeader from "@components/bic-components/top-header/top-header";
-import HomePage from "@/pages/HomePage";
-
-const CommunityPage: React.FC = () => (
-  <IonPage>
-    <BeincomHeader />
-    <IonContent className="ion-padding">
-      <h1>Community Page</h1>
-      <p>Connect with other users</p>
-    </IonContent>
-  </IonPage>
-);
-
-const DeliveryPage: React.FC = () => (
-  <IonPage>
-    <BeincomHeader />
-    <IonContent className="ion-padding">
-      <h1>Delivery Page</h1>
-      <p>Track your deliveries</p>
-    </IonContent>
-  </IonPage>
-);
-
-const ProfilePage: React.FC = () => (
-  <IonPage>
-    <BeincomHeader />
-    <IonContent className="ion-padding">
-      <h1>Profile Page</h1>
-      <p>Your account information</p>
-    </IonContent>
-  </IonPage>
-);
-
-const WalletPage: React.FC = () => (
-  <IonPage>
-    <BeincomHeader />
-    <IonContent className="ion-padding">
-      <h1>Wallet Page</h1>
-      <p>Manage your funds</p>
-    </IonContent>
-  </IonPage>
-);
+import { Route, Routes, Navigate } from "react-router";
 
 const NotFoundPage: React.FC = () => (
-  <IonPage>
-    <BeincomHeader />
-    <IonContent className="ion-padding">
-      <h1>Page Not Found</h1>
-      <p>The page you're looking for doesn't exist.</p>
-    </IonContent>
-  </IonPage>
+  <div>
+    <h1>Page Not Found</h1>
+    <p>The page you're looking for doesn't exist.</p>
+  </div>
 );
 
-// Main App Router component with Ionic Router
-export const AppRouter: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        {/* Define all specific routes first */}
-        <Route path="/" Component={HomePage} />
-        {/* This will catch any unmatched routes */}
-        <Route>
-          <Navigate to="/not-found" />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+import { MainPage } from "@/pages/MainPage";
+import HomePage from "@/pages/HomePage";
+import { CommunitiesPage } from "@/pages/Communities";
+import { NotificationPage } from "@/pages/Notification";
+import { ProfilePage } from "@/pages/ProfilePage";
+import VerticalTransitionDemo from "@/pages/VerticalTransitionDemo";
 
-export default AppRouter;
+// Define routes using createRoutesFromElements for React Router v7a
+const router = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<MainPage />}>
+        <Route index element={<Navigate to="/home" replace />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/communities" element={<CommunitiesPage />} />
+        <Route path="/notification" element={<NotificationPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route
+          path="/vertical-transition"
+          element={<VerticalTransitionDemo />}
+        />
+      </Route>
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
+};
+
+// Main App Router component
+
+export default router;

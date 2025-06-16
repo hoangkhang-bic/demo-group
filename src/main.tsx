@@ -1,14 +1,6 @@
 import { Capacitor } from "@capacitor/core";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import App from "./App";
-
-// Setup Ionic
-import { setupIonicReact } from "@ionic/react";
-
-// Call setupIonicReact before rendering
-setupIonicReact({
-  mode: "md", // Use Material Design style for all platforms
-});
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("App running on:", Capacitor.getPlatform());
@@ -16,6 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("root");
   if (container) {
     // Use type assertion to resolve the TypeScript error
-    (ReactDOM as any).render(<App />, container);
+    ReactDOM.createRoot(container).render(<App />);
   }
 });

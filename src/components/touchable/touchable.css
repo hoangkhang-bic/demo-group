@@ -1,0 +1,91 @@
+.touchable {
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+
+    /* Prevent default touch behaviors */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+
+    /* Ensure proper focus outline for accessibility */
+    outline: none;
+
+    /* Change default padding to 0 */
+    padding: 0;
+}
+
+/* Wrapper styling */
+.touchable-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.touchable-wrapper--full-width {
+    width: 100%;
+    display: block;
+}
+
+/* Content-sized touchable */
+.touchable--content-sized {
+    width: auto;
+    height: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Children container */
+.touchable__children-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Allow child events */
+.touchable--allow-child-events .touchable__children-container {
+    pointer-events: auto;
+}
+
+.touchable:not(.touchable--allow-child-events) .touchable__children-container {
+    pointer-events: none;
+}
+
+/* Focus styles for keyboard navigation */
+.touchable:focus-visible {
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
+/* Disabled state */
+.touchable-disabled {
+    opacity: 0.6;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Prevent text selection within touchable */
+.touchable * {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Allow text selection in input elements */
+.touchable input,
+.touchable textarea {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    pointer-events: auto;
+}
+
+/* Remove default focus outline for non-keyboard users */
+.touchable:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+}

@@ -1,22 +1,110 @@
-import React from "react";
-import {
-  IonContent,
-  IonPage,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonText,
-} from "@ionic/react";
+import React, { useRef, useState } from "react";
 import Page from "@/components/page/page";
 import TopHeader from "@/components/bic-components/top-header/top-header";
-import View from "@/components/View/View";
+import { BottomSheet } from "react-spring-bottom-sheet";
+import "react-spring-bottom-sheet/dist/style.css";
+import PageAndroidTransition from "@/components/wrapper-transistion/page.android.transition";
+import { Button } from "@/components/button/button";
+import { Touchable } from "@/components/touchable/touchable";
+import SafeAreaView from "@/components/seft-area-view/seft-area-view";
+import { useNavigate } from "react-router";
 
-const HomePage: React.FC = () => {
+const BottomSheetExample: React.FC<{
+  open: boolean;
+  className?: string;
+  onDismiss: () => void;
+}> = ({ open, className, onDismiss }) => {
+  const sheetRef = useRef(null);
   return (
-    <Page fullscreen>
-      <TopHeader />
-    </Page>
+    <BottomSheet open={open} className={className} onDismiss={onDismiss}>
+      <SafeAreaView bottom>
+        <div style={{ padding: "20px" }}>
+          <h2>Bottom Sheet Content</h2>
+          <p>This is a bottom sheet with touch opacity buttons.</p>
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
+              gap: "10px",
+              zIndex: 1000,
+            }}
+          >
+            <Button
+              onPress={onDismiss}
+              activeOpacity={0.6}
+              style={{ backgroundColor: "#dc3545" }}
+            >
+              Close Sheet
+            </Button>
+
+            <Touchable
+              onPress={onDismiss}
+              activeOpacity={0.6}
+              style={{
+                backgroundColor: "#6610f2",
+                color: "white",
+                borderRadius: "8px",
+              }}
+              padding="10px 16px"
+            >
+              <span>Close with Touchable</span>
+            </Touchable>
+          </div>
+        </div>
+      </SafeAreaView>
+    </BottomSheet>
+  );
+};
+
+export const HomePage: React.FC = () => {
+  const [open, setOpen] = useState(false);
+  const [buttonPressed, setButtonPressed] = useState(0);
+  const [touchablePressed, setTouchablePressed] = useState(0);
+  const [childPressed, setChildPressed] = useState(0);
+  const [transitionsDisabled, setTransitionsDisabled] = useState(false);
+  const [touchFeedbackDisabled, setTouchFeedbackDisabled] = useState(true);
+  const navigate = useNavigate();
+  const incrementTouchable = () => setTouchablePressed((prev) => prev + 1);
+  const incrementChild = () => setChildPressed((prev) => prev + 1);
+
+  // Handler functions for TopHeader
+  const handleMenuClick = () => setOpen(true);
+  const handleHomeClick = () => {
+    navigate("/home", { replace: true });
+  };
+  const handleCommunitiesClick = () => {
+    navigate("/communities", { replace: true });
+  };
+  const handleNotificationClick = () => {
+    navigate("/notification", { replace: true });
+  };
+  const handleProfileClick = () => {
+    navigate("/profile", { replace: true });
+  };
+  const handleMarketClick = () => {
+    navigate("/market", { replace: true });
+  };
+  const handleChatClick = () => {
+    window.open("https://www.google.com", "_blank");
+  };
+  return (
+    <PageAndroidTransition
+      disableTransition={false}
+      disableTouchFeedback={true}
+    >
+      <SafeAreaView style={{ height: "100vh" }}>
+        <TopHeader
+          onMenuClick={handleMenuClick}
+          onHomeClick={handleHomeClick}
+          onPeopleClick={handleCommunitiesClick}
+          onMarketClick={handleMarketClick}
+          onNotificationClick={handleNotificationClick}
+          onProfileClick={handleProfileClick}
+          onChatClick={handleChatClick}
+        />
+      </SafeAreaView>
+      <BottomSheetExample open={open} onDismiss={() => setOpen(false)} />
+    </PageAndroidTransition>
   );
 };
 

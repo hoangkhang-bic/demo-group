@@ -1,0 +1,49 @@
+.page-vertical-transition {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    will-change: transform, opacity;
+    overflow: hidden;
+}
+
+.page-vertical-transition.from-bottom {
+    transform: translateY(30px);
+}
+
+.page-vertical-transition.from-top {
+    transform: translateY(-30px);
+}
+
+.page-vertical-transition.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.page-vertical-transition.no-transition {
+    transition: none !important;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Ensure content doesn't overflow during transition */
+.page-vertical-transition>* {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* For iOS devices */
+@supports (-webkit-touch-callout: none) {
+    .page-vertical-transition>* {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* For Android devices */
+@supports not (-webkit-touch-callout: none) {
+    .page-vertical-transition>* {
+        overscroll-behavior-y: contain;
+    }
+}
