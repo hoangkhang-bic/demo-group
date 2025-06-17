@@ -1,14 +1,42 @@
 /* Base transition styles */
 .page-transition {
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background-color: var(--background-color, #ffffff);
-    will-change: transform, opacity;
-    touch-action: pan-y pinch-zoom;
-    overflow-x: hidden;
+    z-index: 1;
+    overflow: hidden;
+    /* Hardware acceleration */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    /* Improve rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Allow child elements to scroll */
+.page-transition>* {
+    height: 100%;
+    width: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    /* Reduce repaints */
+    transform: translateZ(0);
+}
+
+/* Remove scroll indicators */
+.page-transition>*::-webkit-scrollbar {
+    display: none;
+}
+
+.page-transition>* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 /* Disable transitions and animations */
@@ -16,11 +44,13 @@
     will-change: auto;
     transition: none !important;
     animation: none !important;
+    transform: none !important;
 }
 
 /* Disable touch feedback */
 .page-transition--no-touch-feedback {
-    -webkit-tap-highlight-color: transparent !important;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .page-transition--no-touch-feedback::after {
@@ -31,33 +61,48 @@
     opacity: 0 !important;
 }
 
+/* Allow page scrolling if needed */
+.page-transition--no-scroll {
+    overflow: hidden;
+}
+
+.page-transition--no-scroll>* {
+    overflow-y: auto;
+}
+
+/* Prevent pull-to-refresh on mobile */
+html,
+body {
+    overscroll-behavior-y: none;
+}
+
 /* Material Design transition timing */
 .page-transition {
     --transition-duration: 300ms;
     --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Page enter animation */
+/* Page enter animation - optimized for performance */
 .page-transition-enter {
-    transform: translateX(100%);
+    transform: translate3d(100%, 0, 0);
     opacity: 0;
 }
 
 .page-transition-enter-active {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
     transition: transform var(--transition-duration) var(--transition-timing),
         opacity var(--transition-duration) var(--transition-timing);
 }
 
-/* Page exit animation */
+/* Page exit animation - optimized for performance */
 .page-transition-exit {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
 }
 
 .page-transition-exit-active {
-    transform: translateX(-100%);
+    transform: translate3d(-100%, 0, 0);
     opacity: 0;
     transition: transform var(--transition-duration) var(--transition-timing),
         opacity var(--transition-duration) var(--transition-timing);
@@ -70,7 +115,7 @@
     -webkit-user-select: none;
 }
 
-/* Material Design elevation during transition */
+/* Material Design elevation during transition - optimized box-shadow */
 .page-transition {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -87,9 +132,6 @@
 .page-transition * {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -97,8 +139,6 @@
 .page-transition input,
 .page-transition textarea {
     -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
     user-select: text;
 }
 

@@ -1,5 +1,10 @@
 import React from "react";
 import "./View.css";
+import {
+  useIsMobile,
+  useIsTablet,
+  useIsDesktop,
+} from "../../hooks/useMediaQuery";
 
 interface ViewProps {
   children: React.ReactNode;
@@ -63,6 +68,17 @@ interface ViewProps {
   transition?: string;
   // Variants
   variant?: "primary" | "secondary" | "light" | "dark";
+  // Responsive display
+  hideOnMobile?: boolean;
+  hideOnTablet?: boolean;
+  hideOnDesktop?: boolean;
+  showOnlyOn?: "mobile" | "tablet" | "desktop";
+  // Mobile class names
+  mobileClassName?: string;
+  tabletClassName?: string;
+  desktopClassName?: string;
+  // Data attributes
+  dataTestId?: string;
 }
 
 export default function View({
@@ -106,26 +122,44 @@ export default function View({
   transform,
   transition,
   variant,
+  hideOnMobile,
+  hideOnTablet,
+  hideOnDesktop,
+  showOnlyOn,
+  mobileClassName,
+  tabletClassName,
+  desktopClassName,
+  dataTestId,
   ...otherProps
 }: ViewProps) {
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
+  const isDesktop = useIsDesktop();
+
+  // Skip rendering if component should be hidden based on responsive props
+  if (
+    (hideOnMobile && isMobile) ||
+    (hideOnTablet && isTablet) ||
+    (hideOnDesktop && isDesktop) ||
+    (showOnlyOn === "mobile" && !isMobile) ||
+    (showOnlyOn === "tablet" && !isTablet) ||
+    (showOnlyOn === "desktop" && !isDesktop)
+  ) {
+    return null;
+  }
+
   // Build dynamic styles based on props
   const dynamicStyles: React.CSSProperties = {
     // Display and flex
-    display: "flex", // Always use flex display
+    display: inline ? "inline-flex" : "flex", // Always use flex display
     ...(flex !== undefined
       ? {
           flex: typeof flex === "boolean" ? 1 : flex,
         }
-      : {
-          width: width ?? "fit-content",
-          height: height ?? "fit-content",
-          minWidth: "min-content",
-          minHeight: "min-content",
-        }),
+      : {}),
     ...(flexDirection ? { flexDirection } : {}),
     ...(justifyContent ? { justifyContent } : {}),
     ...(alignItems ? { alignItems } : {}),
-    ...(inline ? { display: "inline-flex" } : {}),
 
     // Spacing
     ...(padding !== undefined ? { padding } : {}),
@@ -201,7 +235,7 @@ export default function View({
     // Shadow (elevation)
     ...(elevation !== undefined
       ? {
-          boxShadow: `0 ${elevation}px ${elevation * 2}px rgba(0, 0, 0, 0.1)`,
+          boxShadow: `0 ${elevation}px ${elevation * 2}px rgba(0, 0, 0, 0.2)`,
         }
       : {}),
 
@@ -234,12 +268,31 @@ export default function View({
     classNames.push("rn-view--row");
   }
 
+  // Add responsive classNames
+  if (isMobile && mobileClassName) {
+    classNames.push(mobileClassName);
+  }
+
+  if (isTablet && tabletClassName) {
+    classNames.push(tabletClassName);
+  }
+
+  if (isDesktop && desktopClassName) {
+    classNames.push(desktopClassName);
+  }
+
+  // Add base className last
   if (className) {
     classNames.push(className);
   }
 
   return (
-    <div className={classNames.join(" ")} style={dynamicStyles} {...otherProps}>
+    <div
+      className={classNames.join(" ")}
+      style={dynamicStyles}
+      data-testid={dataTestId}
+      {...otherProps}
+    >
       {children}
     </div>
   );

@@ -32,6 +32,16 @@
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.page-vertical-transition>*::-webkit-scrollbar {
+    display: none;
 }
 
 /* For iOS devices */
@@ -46,4 +56,10 @@
     .page-vertical-transition>* {
         overscroll-behavior-y: contain;
     }
+}
+
+/* Prevent pull-to-refresh behavior on mobile */
+html,
+body {
+    overscroll-behavior-y: none;
 }

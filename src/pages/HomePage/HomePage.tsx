@@ -8,6 +8,8 @@ import { Button } from "@/components/button/button";
 import { Touchable } from "@/components/touchable/touchable";
 import SafeAreaView from "@/components/seft-area-view/seft-area-view";
 import { useNavigate } from "react-router";
+import NewsFeeds from "./component/NewsFeeds";
+import View from "@/components/View/View";
 
 const BottomSheetExample: React.FC<{
   open: boolean;
@@ -58,14 +60,7 @@ const BottomSheetExample: React.FC<{
 
 export const HomePage: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const [buttonPressed, setButtonPressed] = useState(0);
-  const [touchablePressed, setTouchablePressed] = useState(0);
-  const [childPressed, setChildPressed] = useState(0);
-  const [transitionsDisabled, setTransitionsDisabled] = useState(false);
-  const [touchFeedbackDisabled, setTouchFeedbackDisabled] = useState(true);
   const navigate = useNavigate();
-  const incrementTouchable = () => setTouchablePressed((prev) => prev + 1);
-  const incrementChild = () => setChildPressed((prev) => prev + 1);
 
   // Handler functions for TopHeader
   const handleMenuClick = () => setOpen(true);
@@ -89,10 +84,13 @@ export const HomePage: React.FC = () => {
   };
   return (
     <PageAndroidTransition
-      disableTransition={false}
+      disableTransition={true}
       disableTouchFeedback={true}
+      style={{
+        paddingBottom: "40px",
+      }}
     >
-      <SafeAreaView style={{ height: "100vh" }}>
+      <View className="flex-1">
         <TopHeader
           onMenuClick={handleMenuClick}
           onHomeClick={handleHomeClick}
@@ -102,7 +100,8 @@ export const HomePage: React.FC = () => {
           onProfileClick={handleProfileClick}
           onChatClick={handleChatClick}
         />
-      </SafeAreaView>
+        <NewsFeeds />
+      </View>
       <BottomSheetExample open={open} onDismiss={() => setOpen(false)} />
     </PageAndroidTransition>
   );

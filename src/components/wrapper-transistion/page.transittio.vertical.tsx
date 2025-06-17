@@ -76,3 +76,4 @@ const PageVerticalTransition: React.FC<PageVerticalTransitionProps> = ({
 };
 
 export default PageVerticalTransition;
+

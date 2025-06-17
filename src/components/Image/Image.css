@@ -13,7 +13,7 @@
     box-sizing: border-box;
 
     /* Default background for loading state */
-    background-color: var(--ion-color-transparent);
+    background-color: transparent;
 }
 
 /* SVG specific styles */
@@ -160,6 +160,41 @@ object.rn-image.interactive {
     background-size: 24px;
 }
 
+/* Cached image styles */
+.rn-image--cached {
+    /* Improve rendering performance for cached images */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Skip animation for cached images that are already loaded */
+.rn-image--cached.rn-image--loaded {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Visual indicator for cached images (optional) */
+.rn-image-container[data-cached="true"][data-loaded="true"] {
+    /* Subtle indicator that the image was loaded from cache */
+    box-shadow: 0 0 0 1px rgba(0, 123, 255, 0.1);
+}
+
+/* Fast reveal for cached images */
+.rn-image--cached:not(.rn-image--loaded) {
+    animation: fastReveal 0.1s ease forwards;
+}
+
+@keyframes fastReveal {
+    from {
+        opacity: 0.9;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 /* Tint color (similar to React Native) */
 .rn-image--tint-overlay {
     position: relative;
@@ -201,4 +236,80 @@ object.rn-image.interactive {
 
 .rn-image--progressive.rn-image--loaded {
     filter: blur(0);
+}
+
+/* Lazy loading styles */
+.rn-image--lazy {
+    transition: opacity 0.3s ease;
+}
+
+.rn-image--not-in-view {
+    opacity: 0;
+}
+
+.rn-image--lazy.rn-image--loaded {
+    animation: lazyReveal 0.5s ease forwards;
+}
+
+/* Skip lazy loading animation for cached images */
+.rn-image--lazy.rn-image--cached.rn-image--loaded {
+    animation: none;
+}
+
+@keyframes lazyReveal {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Placeholder for lazy images */
+.rn-image-container[data-loaded="false"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f0f0f0;
+    background-image: linear-gradient(90deg,
+            #f0f0f0 0px,
+            #f8f8f8 40px,
+            #f0f0f0 80px);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Don't show placeholder for cached images */
+.rn-image-container[data-cached="true"][data-loaded="false"]::before {
+    animation: fastShimmer 0.5s infinite;
+    background-image: linear-gradient(90deg,
+            #f0f0f0 0px,
+            #f8f8f8 20px,
+            #f0f0f0 40px);
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes fastShimmer {
+    0% {
+        background-position: -100% 0;
+    }
+
+    100% {
+        background-position: 100% 0;
+    }
 }

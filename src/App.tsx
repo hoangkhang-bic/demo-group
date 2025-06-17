@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 /* Theme variables */
-import "./css/variables.css";
 import "./css/style.css";
 /* Import our router */
 import AppRouter from "@navigators/route";

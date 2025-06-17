@@ -1,0 +1,126 @@
+.facebook-item {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.facebook-item-username {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1c1e21;
+}
+
+.facebook-item-timestamp {
+    margin: 0;
+    font-size: 12px;
+    color: #65676b;
+}
+
+.facebook-item-text {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #1c1e21;
+    word-break: break-word;
+}
+
+.facebook-item-images {
+    width: 100%;
+    overflow: hidden;
+}
+
+.facebook-item-single-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.facebook-item-image-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.facebook-item-grid-image {
+    width: calc(50% - 1px);
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.facebook-item-stat-icon {
+    font-size: 16px;
+    color: #65676b;
+}
+
+.facebook-item-like-icon {
+    color: #1877f2;
+}
+
+.facebook-item-stat-text {
+    font-size: 13px;
+    color: #65676b;
+}
+
+.facebook-item-action {
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.facebook-item-action:hover {
+    background-color: #f0f2f5;
+}
+
+.facebook-item-action-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.facebook-item-action-icon {
+    font-size: 18px;
+    color: #65676b;
+}
+
+.facebook-item-action-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #65676b;
+}
+
+.facebook-item-liked {
+    color: #1877f2;
+}
+
+/* Responsive styles */
+@media (max-width: 576px) {
+    .facebook-item-grid-image {
+        height: 150px;
+    }
+
+    .facebook-item-action-text {
+        font-size: 12px;
+    }
+}
+
+/* When there are 3 or 4 images in the grid */
+.facebook-item-image-grid img:first-child:nth-last-child(3),
+.facebook-item-image-grid img:first-child:nth-last-child(3)~img,
+.facebook-item-image-grid img:first-child:nth-last-child(4),
+.facebook-item-image-grid img:first-child:nth-last-child(4)~img {
+    width: calc(33.33% - 2px);
+}
+
+/* When there are more than 4 images */
+.facebook-item-image-grid img:first-child:nth-last-child(n+5),
+.facebook-item-image-grid img:first-child:nth-last-child(n+5)~img {
+    width: calc(25% - 2px);
+    height: 120px;
+}

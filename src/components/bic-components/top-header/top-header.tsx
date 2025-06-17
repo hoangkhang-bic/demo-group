@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   IoChatboxEllipsesOutline,
   IoMenuOutline,
@@ -14,12 +14,9 @@ import View from "@components/View/View";
 import Image from "@components/Image/Image";
 import { useIsMobile } from "@hooks/useMediaQuery";
 import HeaderBar from "@components/header-bar/header-bar";
-import BottomSheetComponent from "@components/bottom-sheet/bottom-sheet";
 import "./top-header.css";
 
 import { useUserStore } from "@/store/userStore";
-import { BottomSheetRefType } from "@components/bottom-sheet/bottom-sheet";
-import { Button } from "@/components/button/button";
 import { Touchable } from "@/components/touchable/touchable";
 
 export default function BeincomHeader({
@@ -79,7 +76,7 @@ export default function BeincomHeader({
             source={"/assets/images/image-logo.png"}
             className="image-logo"
           />
-          <View flexDirection="row" alignItems="center" gap={5}>
+          <View className="group-icon-menu-header" hideOnMobile={isMobile}>
             <Touchable onPress={onHomeClick} style={{ padding: 0 }}>
               <IoHomeOutline className="icon" />
             </Touchable>

@@ -1,8 +1,10 @@
 import React, {
   useState,
   useEffect,
+  useRef,
   ImgHTMLAttributes,
   ObjectHTMLAttributes,
+  useMemo,
 } from "react";
 import "./Image.css";
 
@@ -11,6 +13,34 @@ type ResizeMode = "cover" | "contain" | "stretch" | "center" | "repeat";
 
 // Define aspect ratios
 type AspectRatio = "1:1" | "4:3" | "16:9" | "3:2" | "2:3" | number;
+
+// Image cache to store loaded images
+interface CachedImage {
+  url: string;
+  loaded: boolean;
+  error: boolean;
+  timestamp: number;
+}
+
+// Global image cache
+const imageCache = new Map<string, CachedImage>();
+
+// Cache control
+const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes in milliseconds
+const MAX_CACHE_SIZE = 100; // Maximum number of cached images
+
+// Clean up old cache entries
+const cleanupCache = () => {
+  if (imageCache.size > MAX_CACHE_SIZE) {
+    // Sort by timestamp and remove oldest entries
+    const entries = Array.from(imageCache.entries());
+    entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+
+    // Remove oldest entries until we're back to the max size
+    const entriesToRemove = entries.slice(0, entries.length - MAX_CACHE_SIZE);
+    entriesToRemove.forEach(([key]) => imageCache.delete(key));
+  }
+};
 
 interface ImageProps
   extends Omit<ImgHTMLAttributes<HTMLImageElement>, "width" | "height"> {
@@ -40,6 +70,12 @@ interface ImageProps
     strokeWidth?: number | string;
     preserveAspectRatio?: string;
   };
+  // Lazy loading
+  lazyLoad?: boolean;
+  lazyLoadThreshold?: number;
+  // Caching options
+  disableCache?: boolean;
+  cacheKey?: string;
   // Event handlers
   onLoadStart?: () => void;
   onLoad?: () => void;
@@ -64,6 +100,10 @@ const Image: React.FC<ImageProps> = ({
   placeholderSource,
   svg = false,
   svgProps = {},
+  lazyLoad = false,
+  lazyLoadThreshold = 0.1,
+  disableCache = false,
+  cacheKey,
   onLoadStart,
   onLoad,
   onError,
@@ -72,18 +112,91 @@ const Image: React.FC<ImageProps> = ({
   alt = "",
   ...otherProps
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  // Use custom cache key or source URL
+  const imageCacheKey = useMemo(() => cacheKey || source, [cacheKey, source]);
+
+  // Initial states based on cache
+  const cachedImage = !disableCache ? imageCache.get(imageCacheKey) : undefined;
+
+  const [isLoading, setIsLoading] = useState(!cachedImage?.loaded);
+  const [isError, setIsError] = useState(cachedImage?.error || false);
+  const [isLoaded, setIsLoaded] = useState(cachedImage?.loaded || false);
   const [currentSource, setCurrentSource] = useState(
-    placeholderSource || source
+    cachedImage?.loaded ? source : placeholderSource || (lazyLoad ? "" : source)
   );
+  const [isInView, setIsInView] = useState(!lazyLoad);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Detect if the source is an SVG if not explicitly set
   const isSvg = svg || source.toLowerCase().endsWith(".svg");
 
+  // Set up intersection observer for lazy loading
+  useEffect(() => {
+    if (!lazyLoad) return;
+
+    const ref = containerRef.current || imageRef.current;
+    if (!ref) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: lazyLoadThreshold }
+    );
+
+    observer.observe(ref);
+
+    return () => {
+      observer.unobserve(ref);
+    };
+  }, [lazyLoad, lazyLoadThreshold]);
+
   // Handle image loading
   useEffect(() => {
+    if (!isInView) return;
+
+    // Check cache first
+    if (!disableCache && imageCache.has(imageCacheKey)) {
+      const cached = imageCache.get(imageCacheKey)!;
+
+      // If the image is already cached and loaded successfully
+      if (cached.loaded && !cached.error) {
+        setIsLoading(false);
+        setIsError(false);
+        setIsLoaded(true);
+        setCurrentSource(source);
+
+        // Update timestamp to keep this entry fresh
+        imageCache.set(imageCacheKey, {
+          ...cached,
+          timestamp: Date.now(),
+        });
+
+        // Call onLoad callback if provided
+        if (onLoad) onLoad();
+        return;
+      }
+
+      // If cached but with error, check if cache is expired
+      if (cached.error && Date.now() - cached.timestamp < CACHE_EXPIRY) {
+        setIsLoading(false);
+        setIsError(true);
+        setIsLoaded(false);
+
+        // Call onError callback if provided
+        if (onError) onError();
+        return;
+      }
+
+      // Otherwise, try loading again (cache expired or needs refresh)
+    }
+
     setIsLoading(true);
     setIsError(false);
     setIsLoaded(false);
@@ -98,7 +211,53 @@ const Image: React.FC<ImageProps> = ({
     } else {
       setCurrentSource(source);
     }
-  }, [source, placeholderSource, progressive, onLoadStart]);
+
+    // If it's an SVG with special props, we'll handle it differently
+    // and won't use the image cache for those
+    if (isSvg && Object.keys(svgProps).length > 0) {
+      return;
+    }
+
+    // Preload the image to ensure it's cached by the browser
+    if (!disableCache) {
+      const img = new window.Image();
+      img.src = source;
+
+      img.onload = () => {
+        // Update cache
+        imageCache.set(imageCacheKey, {
+          url: source,
+          loaded: true,
+          error: false,
+          timestamp: Date.now(),
+        });
+
+        cleanupCache();
+      };
+
+      img.onerror = () => {
+        // Cache the error state
+        imageCache.set(imageCacheKey, {
+          url: source,
+          loaded: false,
+          error: true,
+          timestamp: Date.now(),
+        });
+      };
+    }
+  }, [
+    source,
+    imageCacheKey,
+    placeholderSource,
+    progressive,
+    onLoadStart,
+    isInView,
+    disableCache,
+    isSvg,
+    svgProps,
+    onLoad,
+    onError,
+  ]);
 
   // Build class names
   const classNames = ["rn-image"];
@@ -152,6 +311,19 @@ const Image: React.FC<ImageProps> = ({
     classNames.push("rn-image--progressive");
   }
 
+  // Add lazy loading class
+  if (lazyLoad) {
+    classNames.push("rn-image--lazy");
+    if (!isInView) {
+      classNames.push("rn-image--not-in-view");
+    }
+  }
+
+  // Add cache class
+  if (!disableCache) {
+    classNames.push("rn-image--cached");
+  }
+
   // Add tint color class if specified
   if (tintColor) {
     classNames.push("rn-image--tint-overlay");
@@ -202,6 +374,18 @@ const Image: React.FC<ImageProps> = ({
     setIsLoading(false);
     setIsLoaded(true);
 
+    // Update cache
+    if (!disableCache) {
+      imageCache.set(imageCacheKey, {
+        url: source,
+        loaded: true,
+        error: false,
+        timestamp: Date.now(),
+      });
+
+      cleanupCache();
+    }
+
     // If progressive loading is enabled and we're showing the placeholder,
     // switch to the actual image
     if (progressive && currentSource === placeholderSource) {
@@ -217,6 +401,16 @@ const Image: React.FC<ImageProps> = ({
     setIsLoading(false);
     setIsError(true);
 
+    // Cache error state
+    if (!disableCache) {
+      imageCache.set(imageCacheKey, {
+        url: source,
+        loaded: false,
+        error: true,
+        timestamp: Date.now(),
+      });
+    }
+
     if (onError) {
       onError();
     }
@@ -231,23 +425,26 @@ const Image: React.FC<ImageProps> = ({
       onLoad: handleLoad as any,
       onError: handleError as any,
       // We use data attribute instead of src for object elements
-      data: currentSource,
+      data: isInView ? currentSource : undefined,
       type: "image/svg+xml",
     };
 
     // For SVG with special handling, we use an object tag
     const svgComponent = (
-      <object {...objectProps}>
-        {/* Fallback for browsers that don't support SVG */}
-        <img
-          src={currentSource}
-          alt={alt}
-          className={classNames.join(" ")}
-          style={inlineStyles}
-          onLoad={handleLoad}
-          onError={handleError}
-        />
-      </object>
+      <div ref={containerRef}>
+        <object {...objectProps}>
+          {/* Fallback for browsers that don't support SVG */}
+          <img
+            src={isInView ? currentSource : undefined}
+            alt={alt}
+            className={classNames.join(" ")}
+            style={inlineStyles}
+            onLoad={handleLoad}
+            onError={handleError}
+            ref={imageRef}
+          />
+        </object>
+      </div>
     );
 
     // If using aspect ratio, wrap the SVG in a container
@@ -277,6 +474,9 @@ const Image: React.FC<ImageProps> = ({
               ? { paddingTop: `${(1 / aspectRatio) * 100}%` }
               : {}
           }
+          ref={containerRef}
+          data-loaded={isLoaded.toString()}
+          data-cached={!disableCache ? "true" : "false"}
         >
           {svgComponent}
         </div>
@@ -317,14 +517,18 @@ const Image: React.FC<ImageProps> = ({
             ? { paddingTop: `${(1 / aspectRatio) * 100}%` }
             : {}
         }
+        ref={containerRef}
+        data-loaded={isLoaded.toString()}
+        data-cached={!disableCache ? "true" : "false"}
       >
         <img
-          src={currentSource}
+          src={isInView ? currentSource : undefined}
           alt={alt}
           className={classNames.join(" ")}
           style={inlineStyles}
           onLoad={handleLoad}
           onError={handleError}
+          ref={imageRef}
           {...otherProps}
         />
       </div>
@@ -334,12 +538,13 @@ const Image: React.FC<ImageProps> = ({
   // Regular image without aspect ratio container
   return (
     <img
-      src={currentSource}
+      src={isInView ? currentSource : undefined}
       alt={alt}
       className={classNames.join(" ")}
       style={inlineStyles}
       onLoad={handleLoad}
       onError={handleError}
+      ref={imageRef}
       {...otherProps}
     />
   );

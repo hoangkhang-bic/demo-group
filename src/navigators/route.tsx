@@ -1,19 +1,14 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router";
-
-const NotFoundPage: React.FC = () => (
-  <div>
-    <h1>Page Not Found</h1>
-    <p>The page you're looking for doesn't exist.</p>
-  </div>
-);
+import NotFoundPage from "@/pages/NotFoundPage";
 
 import { MainPage } from "@/pages/MainPage";
-import HomePage from "@/pages/HomePage";
+import HomePage from "@pages/HomePage/HomePage";
 import { CommunitiesPage } from "@/pages/Communities";
 import { NotificationPage } from "@/pages/Notification";
 import { ProfilePage } from "@/pages/ProfilePage";
 import VerticalTransitionDemo from "@/pages/VerticalTransitionDemo";
+import FacebookDemo from "@/pages/FacebookDemo/FacebookDemo";
 
 // Define routes using createRoutesFromElements for React Router v7a
 const router = () => {
@@ -29,6 +24,7 @@ const router = () => {
           path="/vertical-transition"
           element={<VerticalTransitionDemo />}
         />
+        <Route path="/facebook-demo" element={<FacebookDemo />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

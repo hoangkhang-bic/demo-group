@@ -1,0 +1,1 @@
+export { default as PageTransitionVertical } from './page.transition.vertical'; 
