@@ -6,7 +6,6 @@ import {
   IoSearchOutline,
   IoPersonOutline,
   IoHomeOutline,
-  IoHome,
   IoPeopleOutline,
   IoNewspaperOutline,
 } from "react-icons/io5";
@@ -16,7 +15,8 @@ import { useIsMobile } from "@hooks/useMediaQuery";
 import HeaderBar from "@components/header-bar/header-bar";
 import "./top-header.css";
 
-import { useUserStore } from "@/store/userStore";
+// Import the new hook that combines Zustand and React Query
+import { useUserData } from "@/store/userStore";
 import { Touchable } from "@/components/touchable/touchable";
 
 export default function BeincomHeader({
@@ -36,29 +36,11 @@ export default function BeincomHeader({
   onProfileClick: () => void;
   onChatClick: () => void;
 }) {
-  const userInfo = useUserStore((state) => state.user);
-  const fetchUserInfo = useUserStore((state) => state.fetchUser);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Use the combined hook that provides both Zustand and React Query functionality
+  const { user, isLoading } = useUserData();
   const [searchQuery, setSearchQuery] = useState("");
 
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
-
-  const openMenu = () => {
-    if (isMobileMenuOpen) {
-      setIsMobileMenuOpen(false);
-    } else {
-      setIsMobileMenuOpen(true);
-    }
-  };
-
-  const closeMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
-
   return (
     <HeaderBar className={isMobile ? "mobile-header" : "desktop-header"}>
       <View
@@ -89,20 +71,28 @@ export default function BeincomHeader({
           </View>
         </View>
         <SearchBar value={searchQuery} onChange={setSearchQuery} />
-        <View flexDirection="row" alignItems="center" gap={10}>
-          <div className="group-icon-menu-header">
+        <View
+          flexDirection="row"
+          alignItems="center"
+          gap={10}
+          hideOnMobile={isMobile}
+        >
+          <View className="group-icon-menu-header">
             <Touchable onPress={onNotificationClick}>
               <IoNotificationsOutline className="icon" />
             </Touchable>
             <Touchable onPress={onChatClick}>
               <IoChatboxEllipsesOutline className="icon" />
             </Touchable>
-          </div>
-          <AvatarComponent
-            avatar={userInfo?.avatar || ""}
-            onPress={onProfileClick}
-          />
+          </View>
         </View>
+        <AvatarComponent
+          avatar={user?.avatar || ""}
+          isLoading={isLoading}
+          hideOnMobile={isMobile}
+          onPress={onProfileClick}
+          onChatPress={onChatClick}
+        />
       </View>
     </HeaderBar>
   );
@@ -115,11 +105,27 @@ interface SearchBarProps {
 
 const AvatarComponent = ({
   avatar,
+  isLoading,
   onPress,
+  onChatPress,
+  hideOnMobile,
 }: {
   avatar: string;
+  isLoading?: boolean;
   onPress: () => void;
+  onChatPress?: () => void;
+  hideOnMobile?: boolean;
 }) => {
+  if (isLoading) {
+    return <div className="avatar-loading" />;
+  }
+  if (hideOnMobile) {
+    return (
+      <Touchable onPress={onChatPress}>
+        <IoChatboxEllipsesOutline className="icon" />
+      </Touchable>
+    );
+  }
   return (
     <Touchable onPress={onPress}>
       {avatar ? (

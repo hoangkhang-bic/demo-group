@@ -10,6 +10,8 @@ import {
   IoPerson,
   IoAddOutline,
   IoAdd,
+  IoPeopleOutline,
+  IoPeople,
 } from "react-icons/io5";
 import { Link, useLocation } from "react-router";
 import "./bottom-tab.css";
@@ -29,16 +31,16 @@ interface TabItem {
 const tabs: TabItem[] = [
   {
     id: 1,
-    label: "Home",
+    label: "",
     icon: <IoHomeOutline className="tab-icon" />,
     activeIcon: <IoHome className="tab-icon" />,
     path: "/home",
   },
   {
     id: 2,
-    label: "Communities",
-    icon: <IoSearchOutline className="tab-icon" />,
-    activeIcon: <IoSearch className="tab-icon" />,
+    label: "",
+    icon: <IoPeopleOutline className="tab-icon" />,
+    activeIcon: <IoPeople className="tab-icon" />,
     path: "/communities",
   },
   {
@@ -65,14 +67,14 @@ const tabs: TabItem[] = [
   },
   {
     id: 5,
-    label: "Notifications",
+    label: "",
     icon: <IoNotificationsOutline className="tab-icon" />,
     activeIcon: <IoNotifications className="tab-icon" />,
     path: "/notification",
   },
   {
     id: 6,
-    label: "Profile",
+    label: "",
     icon: <IoPersonOutline className="tab-icon" />,
     activeIcon: <IoPerson className="tab-icon" />,
     path: "/profile",
@@ -84,7 +86,6 @@ const BottomTab: React.FC = React.memo(() => {
   const location = useLocation();
   const currentPath = location.pathname;
   const user = useUserStore((state) => state.user);
-
   // Memoize the profile tab to prevent unnecessary re-renders
   const renderProfileTab = useMemo(() => {
     const isActive = currentPath === "/profile";
@@ -97,22 +98,10 @@ const BottomTab: React.FC = React.memo(() => {
           className={`tab-button ${isActive ? "active" : ""}`}
         >
           {user?.avatar ? (
-            <Avatar
-              variant="circle"
-              source={user?.avatar}
-              className="tab-icon"
-              size="xs"
-            />
+            <Avatar variant="circle" size="sm" source={user?.avatar} />
           ) : (
-            <AvatarPlaceholder
-              variant="circle"
-              size="xs"
-              className="tab-icon"
-            />
+            <AvatarPlaceholder variant="circle" className="tab-icon" />
           )}
-          <span className={`tab-label user-name ${textActive}`}>
-            {user?.name || "Profile"}
-          </span>
         </Link>
       </div>
     );

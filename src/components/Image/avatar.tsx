@@ -43,11 +43,7 @@ const Avatar: React.FC<AvatarProps> = ({
   return (
     <div
       className={`avatar avatar--${size} avatar--${variant} ${className}`}
-      style={{
-        width: dimension,
-        height: dimension,
-        ...style,
-      }}
+      style={style}
       onClick={onClick}
     >
       <Image
@@ -83,16 +79,9 @@ export const AvatarPlaceholder: React.FC<Omit<AvatarProps, "source">> = ({
     <div
       className={`avatar-placeholder avatar--${size} avatar--${variant} ${className}`}
       style={{
-        width: dimension,
-        height: dimension,
-        backgroundColor: "#f0f0f0",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        ...style,
         borderRadius,
         border: "1px solid #e0e0e0",
-        color: "#999",
-        ...style,
       }}
       onClick={onClick}
     >
