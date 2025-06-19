@@ -10,7 +10,6 @@ import SafeAreaView from "@/components/seft-area-view/seft-area-view";
 import { useNavigate } from "react-router";
 import NewsFeeds from "./component/NewsFeeds";
 import View from "@/components/View/View";
-import json1000 from "@/utils/fake_users_1000.json";
 
 const BottomSheetExample: React.FC<{
   open: boolean;
@@ -60,7 +59,6 @@ const BottomSheetExample: React.FC<{
 };
 
 export const HomePage: React.FC = () => {
-  console.log(json1000?.[0]);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
