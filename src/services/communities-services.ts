@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import groupMockData from './mock-communities';
+import { allCommunities } from  '@services/mock-communities-index';
 
 // Types
 export interface GroupMember {
@@ -56,7 +56,7 @@ export const useCommunitiesData = (options = {}) => {
         await new Promise((resolve) => setTimeout(resolve, 800));
         
         // Return mock data
-        return groupMockData;
+        return allCommunities;
       } else {
         // Real API call
         const token = localStorage.getItem('auth_token');
@@ -93,7 +93,7 @@ export const useCommunityData = (communityId: string, options = {}) => {
         await new Promise((resolve) => setTimeout(resolve, 500));
         
         // Find the community in mock data
-        const community = groupMockData.groups.find(group => group.id === communityId);
+        const community = allCommunities.find(group => group.id === communityId);
         
         if (!community) {
           throw new Error(`Community not found: ${communityId}`);
@@ -140,7 +140,7 @@ export const useUpdateCommunity = () => {
         // In a real implementation, this would update the data on the server
         // For now, we'll just return the data that was passed in
         return { 
-          ...groupMockData.groups.find(group => group.id === communityId),
+          ...allCommunities.find(group => group.id === communityId),
           ...data
         } as Group;
       } else {

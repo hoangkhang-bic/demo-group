@@ -10,6 +10,8 @@ import SafeAreaView from "@/components/seft-area-view/seft-area-view";
 import { useNavigate } from "react-router";
 import NewsFeeds from "./component/NewsFeeds";
 import View from "@/components/View/View";
+import ListCommunities from "@pages/CommunitiesPage/component/list-communities";
+import { mockCommunitiesList } from "@services/mock-communities-list";
 
 const BottomSheetExample: React.FC<{
   open: boolean;
@@ -90,7 +92,7 @@ export const HomePage: React.FC = () => {
         paddingBottom: "40px",
       }}
     >
-      <View className="flex-1">
+      <View>
         <TopHeader
           onMenuClick={handleMenuClick}
           onHomeClick={handleHomeClick}
@@ -100,8 +102,14 @@ export const HomePage: React.FC = () => {
           onProfileClick={handleProfileClick}
           onChatClick={handleChatClick}
         />
-        <NewsFeeds />
+        <View style={{ padding: "20px" }} flex={1}>
+          <ListCommunities sections={mockCommunitiesList} />
+        </View>
+        <View style={{ padding: "20px" }} flex={1}>
+          <ListCommunities sections={mockCommunitiesList} />
+        </View>
       </View>
+
       <BottomSheetExample open={open} onDismiss={() => setOpen(false)} />
     </PageAndroidTransition>
   );
