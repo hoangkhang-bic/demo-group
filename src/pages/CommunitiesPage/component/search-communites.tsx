@@ -1,33 +1,28 @@
 import React from "react";
 import View from "@components/View/View";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { Community } from "./list-communities";
 import { useNavigate } from "react-router-dom";
 import { Touchable } from "@components/touchable/touchable";
+import SearchInput from "./search-input/search-input";
 
 interface SearchCommunitiesProps {
   onSearch: (query: string) => void;
-  searchResults?: Community[];
+  searchResults?: any[];
 }
 
 const SearchCommunities: React.FC<SearchCommunitiesProps> = ({
   onSearch,
   searchResults = [],
 }) => {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [showResults, setShowResults] = React.useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = React.useState(false);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: any) => {
     const query = e.target.value;
     setSearchQuery(query);
     onSearch(query);
     setShowResults(!!query);
-  };
-
-  const handleCreateCommunity = () => {
-    navigate("/create-community");
   };
 
   const toggleSearch = () => {
@@ -50,36 +45,17 @@ const SearchCommunities: React.FC<SearchCommunitiesProps> = ({
 
         {/* Search Input when expanded */}
         {isSearchExpanded && (
-          <View className="flex-1 relative mr-2">
-            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#494949] text-sm" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Search communities..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6F32BB] focus:bg-white transition-all"
-              autoFocus
-            />
-          </View>
+          <SearchInput
+            onSearch={handleSearchChange}
+            searchResults={searchResults}
+            onFocus={() => setIsSearchExpanded(true)}
+            onBlur={() => setIsSearchExpanded(false)}
+          />
         )}
-
-        {/* Action Buttons */}
-        <View className="flex items-center gap-2">
-          {/* Search Toggle Button */}
-          <button
-            onClick={toggleSearch}
-            className="flex items-center justify-center w-8 h-8 bg-white hover:bg-[#ECECEC] rounded-xl transition-colors"
-          >
-            <FaSearch className="text-[#494949] text-sm" />
-          </button>
-
-          {/* Create Button */}
-          <Touchable activeOpacity={0.7} onPress={handleCreateCommunity}>
-            <View className="w-">
-              <FaPlus className="text-[#6F32BB] text-sm" />
-            </View>
-          </Touchable>
-        </View>
+        <ActionButtons
+          toggleSearch={toggleSearch}
+          isShowSearch={isSearchExpanded}
+        />
       </View>
 
       {/* Search Results */}
@@ -87,4 +63,44 @@ const SearchCommunities: React.FC<SearchCommunitiesProps> = ({
   );
 };
 
+const ActionButtons = ({
+  toggleSearch,
+  isShowSearch,
+}: {
+  toggleSearch: () => void;
+  isShowSearch: boolean;
+}) => {
+  const navigate = useNavigate();
+
+  const handleCreateCommunity = () => {
+    navigate("/create-community");
+  };
+
+  return (
+    <View
+      justifyContent="center"
+      alignItems="center"
+      flexDirection="row"
+      paddingHorizontal={8}
+      gap={10}
+    >
+      {!isShowSearch && (
+        <Touchable activeOpacity={0.7} onPress={toggleSearch}>
+          <FaSearch className="text-[#494949] text-sm" size={16} />
+        </Touchable>
+      )}
+      <Touchable activeOpacity={0.7} onPress={handleCreateCommunity}>
+        <View
+          borderRadius={9999}
+          padding={10}
+          backgroundColor="#ECECEC"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <FaPlus className="text-[#6F32BB] text-sm" />
+        </View>
+      </Touchable>
+    </View>
+  );
+};
 export default SearchCommunities;

@@ -1,0 +1,51 @@
+.virtual-list {
+    -webkit-overflow-scrolling: touch;
+    /* Optimize performance */
+    contain: layout style paint;
+    /* Ensure proper scrolling behavior */
+    scroll-behavior: smooth;
+    overscroll-behavior-y: contain;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.virtual-list.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.virtual-list.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Add iOS-style momentum scrolling */
+@supports (-webkit-touch-callout: none) {
+    .virtual-list {
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Optimize virtual list items for performance */
+.virtual-list .virtual-list-item {
+    /* Reduce containment to avoid scroll blocking */
+    contain: layout style;
+    /* Remove will-change to prevent layer creation issues */
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+    backface-visibility: hidden;
+}
+
+/* Smooth transitions for column spacing */
+.virtual-list .virtual-list-item:not(:last-child) {
+    transition: margin-bottom 0.2s ease;
+}
+
+/* Ensure child elements don't interfere with scrolling */
+.virtual-list .virtual-list-item>* {
+    /* Prevent child elements from becoming scrollable */
+    overflow: visible;
+    /* Ensure children don't interfere with parent scrolling */
+    pointer-events: auto;
+}

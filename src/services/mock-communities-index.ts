@@ -1,5 +1,5 @@
 
-import techCommunity from './mock-communities-extended';
+import techCommunity, { genListCommunities } from './mock-communities-extended';
 import academicCommunity from './mock-communities-academic';
 import gamingCommunity from './mock-communities-gaming';
 
@@ -9,9 +9,13 @@ export const allCommunities = [
   academicCommunity,
   gamingCommunity
 ];
-
+export const allCommunitiesWithLength = genListCommunities(1000);
+export const createListCommunities = (length: number) => {
+  
+  return genListCommunities(length);
+};
 // Helper function to get a community by ID
-export const getCommunityById = (id: string) => {
+export const getMockCommunityById = (id: string) => {
   return allCommunities.find(community => community.id === id);
 };
 
@@ -21,8 +25,17 @@ export const getRandomCommunity = () => {
   return allCommunities[randomIndex];
 };
 
+export const getCommunitiesWithLength = (length: number) => {
+  return genListCommunities(length);
+};
+
+export const getUserCommunities = (length: number) => {
+  return genListCommunities(10);
+};  
+
 export {
   techCommunity,
   academicCommunity,
   gamingCommunity
+
 }; 

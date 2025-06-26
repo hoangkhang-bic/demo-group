@@ -53,9 +53,9 @@ const tabs: TabItem[] = [
         width={"2.2em"}
         height={"2.2em"}
         className="rounded-full"
-        backgroundColor="var(--color-primary-500)"
+        backgroundColor="var(--color-primary-100)"
       >
-        <IoAddOutline size={20} color="var(--color-primary)" />
+        <IoAddOutline size={20} color="var(--color-primary-500)" />
       </View>
     ),
     activeIcon: (

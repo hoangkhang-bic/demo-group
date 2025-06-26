@@ -3,7 +3,7 @@
     justify-content: space-between;
     align-items: center;
     background: var(--color-background, #ffffff);
-    border-top: 1px solid var(--ion-border-color, rgba(0, 0, 0, 0.1));
+    border-top: 1px solid var(rgba(0, 0, 0, 0.1));
     padding: 4px 0;
     height: 60px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
@@ -73,7 +73,7 @@
 
 /* Active state */
 .tab-button.active {
-    color: var(--color-primary, #3880ff);
+    color: var(--color-primary);
 }
 
 /* Responsive adjustments */

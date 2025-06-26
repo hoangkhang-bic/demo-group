@@ -173,11 +173,62 @@ const extendedCommunityMockData = {
         { ...getUser(5), role: "HR Manager" }
       ]
     }
-  ]
+  ],
+  
 };
 
-const getExtendedGroupMockData = (index: number) => {
-  return extendedCommunityMockData.groups[index % extendedCommunityMockData.groups.length];
-}
+export const genListCommunities = (length: number) => {
+  const communityNames = [
+    "Tech Innovators",
+    "Digital Creators",
+    "Code Warriors",
+    "Future Builders",
+    "Innovation Hub",
+    "Dev Masters",
+    "Tech Pioneers",
+    "Digital Nomads",
+    "Creative Coders",
+    "Tech Visionaries"
+  ];
+
+  const communityIcons = ["🚀", "💻", "🎯", "⚡", "🔥", "🌟", "💡", "🎨", "🛠️", "🎭"];
+  const communityColors = [
+    "#34a853", "#4285f4", "#ea4335", "#fbbc05", "#9c27b0", 
+    "#ff6d01", "#00bcd4", "#8bc34a", "#607d8b", "#e91e63"
+  ];
+
+  return Array.from({ length }, (_, index) => {
+    const communityIndex = index % communityNames.length;
+    const result = {
+      ...extendedCommunityMockData,
+      id: `com-${String(index + 1).padStart(2, '0')}`,
+      name: communityNames[communityIndex],
+      icon: communityIcons[communityIndex],
+      color: communityColors[communityIndex],
+      avatarUrl: "https://picsum.photos/200/300",
+      memberCount: Math.floor(Math.random() * 50) + 20, // Random member count between 20-69
+             groups: extendedCommunityMockData.groups.map((group, groupIndex) => ({
+         ...group,
+         id: `${group.id}-${index + 1}`,
+         memberCount: Math.floor(Math.random() * 25) + 5, // Random member count for groups
+         subGroups: group.subGroups?.map((subGroup: any, subIndex) => ({
+           ...subGroup,
+           id: `${subGroup.id}-${index + 1}`,
+           parentId: `${group.id}-${index + 1}`,
+           memberCount: Math.floor(Math.random() * 10) + 2, // Random member count for subgroups
+           ...(subGroup.subGroups && {
+             subGroups: subGroup.subGroups.map((nestedSubGroup: any, nestedIndex: number) => ({
+               ...nestedSubGroup,
+               id: `${nestedSubGroup.id}-${index + 1}`,
+               parentId: `${subGroup.id}-${index + 1}`,
+               memberCount: Math.floor(Math.random() * 5) + 1
+             }))
+           })
+         }))
+       }))
+    };
+    return result;
+  });
+};
 
 export default extendedCommunityMockData; 

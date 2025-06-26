@@ -2,6 +2,7 @@ import { Capacitor } from "@capacitor/core";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { SplashScreen } from "@capacitor/splash-screen";
+import "tailwindcss";
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("App running on:", Capacitor.getPlatform());

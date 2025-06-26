@@ -1,61 +1,42 @@
-        /** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
+
 export default {
-  content: ["./src/**/*.{js,jsx,ts,tsx}", "./index.html"],
-            theme: {
-    extend: {
-      colors: {
-        primary: {
-          DEFAULT: "var(--color-primary)",
-          shade: "var(--color-primary-shade)",
-          tint: "var(--color-primary-tint)",
-        },
-        secondary: {
-          DEFAULT: "var(--color-secondary)",
-          shade: "var(--color-secondary-shade)",
-          tint: "var(--color-secondary-tint)",
-        },
-        success: {
-          DEFAULT: "var(--color-success)",
-          shade: "var(--color-success-shade)",
-          tint: "var(--color-success-tint)",
-        },
-        warning: {
-          DEFAULT: "var(--color-warning)",
-          shade: "var(--color-warning-shade)",
-          tint: "var(--color-warning-tint)",
-        },
-        danger: {
-          DEFAULT: "var(--color-danger)",
-          shade: "var(--color-danger-shade)",
-          tint: "var(--color-danger-tint)",
-        },
+  content: ["./src/**/*.{js,jsx,ts,tsx}", "./index.html", "./public/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    colors: {
+      primary: {
+        DEFAULT: 'var(--color-primary)',
+        dark: 'var(--color-primary-dark)',
+        light: 'var(--color-primary-light)',
       },
-      fontFamily: {
-        sans: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Open Sans", "Helvetica Neue", "sans-serif"],
+      gray: {
+        50: 'var(--color-gray-50)',
+        100: 'var(--color-gray-100)',
+        600: 'var(--color-gray-600)',
+        700: 'var(--color-gray-700)',
+        900: 'var(--color-gray-900)',
       },
-      spacing: {
-        xs: "var(--spacing-xs)",
-        sm: "var(--spacing-sm)",
-        md: "var(--spacing-md)",
-        lg: "var(--spacing-lg)",
-        xl: "var(--spacing-xl)",
-        "2xl": "var(--spacing-2xl)",
-      },
-      borderRadius: {
-        DEFAULT: "8px",
-        sm: "4px",
-        md: "8px",
-        lg: "16px",
-        xl: "24px",
-      },
-      boxShadow: {
-        DEFAULT: "0 2px 8px rgba(0, 0, 0, 0.1)",
-        sm: "0 1px 2px rgba(0, 0, 0, 0.05)",
-        md: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        lg: "0 10px 15px rgba(0, 0, 0, 0.1)",
-        xl: "0 20px 25px rgba(0, 0, 0, 0.15)",
-      },
+      info: 'var(--color-info)',
+      success: 'var(--color-success)',
+      warning: 'var(--color-warning)',
+      error: 'var(--color-error)',
     },
-            },
-            plugins: [],
-          };
+    backgroundImage: {
+      'purple-glow': 'var(--gradient-purple-glow)',
+    },
+    fontFamily: {
+      sans: ['Inter', 'Roboto', 'sans-serif'],
+    },
+    screens: {
+      'mobile-and-tablet': 'var(--breakpoint-mobile-and-tablet)',
+      'desktop': 'var(--breakpoint-desktop)',
+      'desktop-and-tablet': 'var(--breakpoint-desktop-and-tablet)',
+      'desktop-and-mobile': 'var(--breakpoint-desktop-and-mobile)',
+    },
+  },
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/aspect-ratio'),
+  ],
+};

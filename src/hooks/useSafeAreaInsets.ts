@@ -57,4 +57,14 @@ export function useSafeAreaInset(side: keyof SafeAreaInsets): number {
   return insets[side];
 }
 
+export function useGetBottomTabInset() {
+  const insetBottom = useSafeAreaInset("bottom");
+  return insetBottom + 34;
+}
+// * using for mobile
+export function useGetTopHeaderInset() {
+  const insetTop = useSafeAreaInset("top");
+  return `calc(${insetTop}px + var(--top-header-height))`;
+}
+
 export default useSafeAreaInsets; 

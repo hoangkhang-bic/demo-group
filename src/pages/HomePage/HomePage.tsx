@@ -11,8 +11,22 @@ import { useNavigate } from "react-router";
 import NewsFeeds from "./component/NewsFeeds";
 import View from "@/components/View/View";
 import ListCommunities from "@pages/CommunitiesPage/component/list-communities";
-import { mockCommunitiesList } from "@services/mock-communities-list";
+import CommunitiesSidebar from "@pages/PinCommunities/side-bar-communities";
+import { useCommunitiesWithLength } from "@/services/communities-services";
+import { CommunitiesItem } from "@pages/CommunitiesPage/component/commuinities-item";
+import { useIsMobile } from "@/hooks/useMediaQuery";
+import { TopHeaderWeb } from "../TopHeader";
 
+const communities = [
+  {
+    id: "1",
+    name: "Community 1",
+    avatarUrl: "https://via.placeholder.com/40",
+    isVerified: true,
+    isPinned: true,
+    notificationCount: 10,
+  },
+];
 const BottomSheetExample: React.FC<{
   open: boolean;
   className?: string;
@@ -61,11 +75,16 @@ const BottomSheetExample: React.FC<{
 };
 
 export const HomePage: React.FC = () => {
+  const { data: communities } = useCommunitiesWithLength(10);
+
+  const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   // Handler functions for TopHeader
-  const handleMenuClick = () => setOpen(true);
+  const handleMenuClick = () => {
+    navigate("/pin-communities");
+  };
   const handleHomeClick = () => {
     navigate("/home", { replace: true });
   };
@@ -92,21 +111,28 @@ export const HomePage: React.FC = () => {
         paddingBottom: "40px",
       }}
     >
-      <View>
-        <TopHeader
-          onMenuClick={handleMenuClick}
-          onHomeClick={handleHomeClick}
-          onPeopleClick={handleCommunitiesClick}
-          onMarketClick={handleMarketClick}
-          onNotificationClick={handleNotificationClick}
-          onProfileClick={handleProfileClick}
-          onChatClick={handleChatClick}
-        />
-        <View style={{ padding: "20px" }} flex={1}>
-          <ListCommunities sections={mockCommunitiesList} />
-        </View>
-        <View style={{ padding: "20px" }} flex={1}>
-          <ListCommunities sections={mockCommunitiesList} />
+      <View height={`var(--top-header-height)`}>
+        <TopHeaderWeb />
+      </View>
+      <View flexDirection="row" flex={1}>
+        {!isMobile && (
+          <View
+            flex={1}
+            overflow="hidden"
+            padding={10}
+            height={`calc(100vh - var(--top-header-height))`}
+            className="overflow-y-auto"
+          >
+            <CommunitiesSidebar
+              communities={communities}
+              onSearch={() => {}}
+              onCreateCommunity={() => {}}
+              onCommunitySelect={() => {}}
+            />
+          </View>
+        )}
+        <View flex={3}>
+          <NewsFeeds />
         </View>
       </View>
 

@@ -9,6 +9,7 @@ interface PageTransitionProps {
   disableTouchFeedback?: boolean;
   style?: React.CSSProperties;
   allowPageScroll?: boolean;
+  safeArea?: boolean;
 }
 
 interface GestureEvent {
@@ -23,6 +24,7 @@ const PageAndroidTransition = React.memo(function PageAndroidTransition({
   disableTransition = false,
   disableTouchFeedback = true,
   allowPageScroll = false,
+  safeArea = false,
 }: PageTransitionProps) {
   const location = useLocation();
   const pageRef = useRef<HTMLDivElement>(null);
@@ -182,6 +184,9 @@ const PageAndroidTransition = React.memo(function PageAndroidTransition({
 
   // Prepare optimized inline styles
   const combinedStyles = {
+    // Default to full screen dimensions
+    height: "100vh",
+    width: "100vw",
     ...style,
     willChange: disableTransition ? undefined : "transform",
   };

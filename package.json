@@ -11,7 +11,8 @@
     "start": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "export-tailwind-config": "tailwindcss-export-config --config=tailwind.config.js --destination=./src/css/tailwind-variables --format=css --quoted-keys=true"
   },
   "dependencies": {
     "@capacitor/android": "^7.3.0",
@@ -35,12 +36,17 @@
   },
   "devDependencies": {
     "@capacitor/cli": "latest",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.7",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.5.2",
     "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
     "tailwindcss": "^4.1.10",
+    "tailwindcss-export-config": "^4.1.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
   },

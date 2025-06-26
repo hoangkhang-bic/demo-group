@@ -23,7 +23,6 @@
     justify-content: space-between;
     width: 100%;
     min-height: 48px;
-    padding: 0 16px;
     position: relative;
 }
 
@@ -138,7 +137,6 @@
 @media (max-width: 576px) {
     .mb-header__container {
         min-height: 48px;
-        padding: 0 12px;
     }
 
     .mb-header__back-icon {
@@ -153,14 +151,12 @@
 @media (min-width: 577px) and (max-width: 991px) {
     .mb-header__container {
         min-height: 56px;
-        padding: 0 16px;
     }
 }
 
 @media (min-width: 992px) {
     .mb-header__container {
         min-height: 64px;
-        padding: 0 20px;
     }
 
     .mb-header__title-text {

@@ -1,26 +1,38 @@
 import React, { useState, useRef, useEffect } from "react";
 import View from "@components/View/View";
 
+interface TabItem {
+  key: string;
+  title: string;
+}
+
 interface TabViewProps {
-  tabs: {
-    key: string;
-    title: string;
-    content: React.ReactNode;
-  }[];
+  tabs: TabItem[];
   initialTabKey?: string;
   className?: string;
+  onTabChange?: (tab: string) => void;
+  activeTab?: string;
+  tabClassName?: string;
+  activeTabClassName?: string;
 }
 
 export const TabView: React.FC<TabViewProps> = ({
   tabs,
   initialTabKey,
   className = "",
+  onTabChange,
+  activeTab: controlledActiveTab,
+  tabClassName = "",
+  activeTabClassName = "border-b-2 border-primary font-medium text-primary",
 }) => {
-  const [activeTab, setActiveTab] = useState(initialTabKey || tabs[0]?.key);
+  const [internalActiveTab, setInternalActiveTab] = useState(
+    initialTabKey || tabs[0]?.key
+  );
   const tabsRef = useRef<HTMLDivElement>(null);
   const activeTabRef = useRef<HTMLDivElement>(null);
 
-  const activeContent = tabs.find((tab) => tab.key === activeTab)?.content;
+  // Use controlled or uncontrolled active tab
+  const activeTab = controlledActiveTab ?? internalActiveTab;
 
   // Scroll active tab into view
   useEffect(() => {
@@ -44,39 +56,45 @@ export const TabView: React.FC<TabViewProps> = ({
     }
   }, [activeTab]);
 
-  return (
-    <View className={`flex flex-col h-full ${className}`}>
-      {/* Tab Headers Container */}
-      <View className="relative border-b">
-        {/* Horizontal Scrollable Tabs */}
-        <div
-          ref={tabsRef}
-          className="flex overflow-x-auto hide-scrollbar"
-          style={{
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            WebkitOverflowScrolling: "touch",
-          }}
-        >
-          {tabs.map((tab) => (
-            <div
-              key={tab.key}
-              ref={tab.key === activeTab ? activeTabRef : null}
-              className={`flex-shrink-0 py-3 px-6 text-center cursor-pointer transition-all duration-200 whitespace-nowrap ${
-                activeTab === tab.key
-                  ? "text-blue-600 border-b-2 border-blue-600 font-medium"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-              onClick={() => setActiveTab(tab.key)}
-            >
-              <span className="text-sm">{tab.title}</span>
-            </div>
-          ))}
-        </div>
-      </View>
+  const handleTabClick = (tabKey: string) => {
+    if (!controlledActiveTab) {
+      setInternalActiveTab(tabKey);
+    }
+    onTabChange?.(tabKey);
+  };
 
-      {/* Tab Content */}
-      <View className="flex-1 overflow-hidden">{activeContent}</View>
+  return (
+    <View
+      className={`${className}`}
+      style={{
+        boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      {/* Horizontal Scrollable Tabs */}
+      <div
+        ref={tabsRef}
+        className="flex overflow-x-auto hide-scrollbar "
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
+        {tabs.map((tab) => (
+          <div
+            key={tab.key}
+            ref={tab.key === activeTab ? activeTabRef : null}
+            className={`flex-shrink-0 py-3 px-6 text-center cursor-pointer transition-all duration-200 whitespace-nowrap ${tabClassName} ${
+              activeTab === tab.key
+                ? activeTabClassName
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+            onClick={() => handleTabClick(tab.key)}
+          >
+            <span className="text-sm">{tab.title}</span>
+          </div>
+        ))}
+      </div>
     </View>
   );
 };
@@ -93,8 +111,10 @@ const styles = `
 `;
 
 // Add styles to document
-const styleSheet = document.createElement("style");
-styleSheet.textContent = styles;
-document.head.appendChild(styleSheet);
+if (typeof document !== "undefined") {
+  const styleSheet = document.createElement("style");
+  styleSheet.textContent = styles;
+  document.head.appendChild(styleSheet);
+}
 
 export default TabView;
