@@ -41,7 +41,7 @@ export const CommunitiesItem: React.FC<CommunitiesItemProps> = ({
         <View flexDirection="row" alignItems="center" gap={10}>
           <Avatar
             source={avatarUrl}
-            size="xl"
+            size="md"
             variant="circle"
             alt="Community Avatar"
             className="w-16 h-16 rounded-[20px]"

@@ -1,64 +1,138 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import "./virtual-list.css";
 
+type ScrollDirection = "vertical" | "horizontal";
+
+interface ListRenderItemInfo<T> {
+  item: T;
+  index: number;
+  separators: {
+    highlight: () => void;
+    unhighlight: () => void;
+    updateProps: (select: "leading" | "trailing", newProps: any) => void;
+  };
+}
+
 interface VirtualListProps<T> {
-  items: any[];
-  renderItem: (item: T, index: number) => React.ReactNode;
-  itemHeight?: number;
-  overscan?: number;
-  className?: string;
+  data: T[];
+  renderItem: (info: ListRenderItemInfo<T>) => React.ReactNode;
+  getItemLayout?: (
+    data: T[] | null | undefined,
+    index: number
+  ) => {
+    length: number;
+    offset: number;
+    index: number;
+  };
+  horizontal?: boolean;
+  numColumns?: number;
+  initialNumToRender?: number;
+  keyExtractor?: (item: T, index: number) => string;
   onEndReached?: () => void;
-  endReachedThreshold?: number;
+  onEndReachedThreshold?: number;
+  onRefresh?: () => void;
+  refreshing?: boolean;
+  ListHeaderComponent?: React.ReactNode;
+  ListFooterComponent?: React.ReactNode;
+  ListEmptyComponent?: React.ReactNode;
+  ItemSeparatorComponent?: React.ComponentType<{
+    highlighted: boolean;
+    leadingItem: T | null;
+  }>;
+  inverted?: boolean;
+
+  // Style props
   style?: React.CSSProperties;
+  contentContainerStyle?: React.CSSProperties;
+  className?: string;
   height?: number | string;
   width?: number | string;
-  scrollEnabled?: boolean;
+
+  // Scroll indicators
+  showsHorizontalScrollIndicator?: boolean;
   showsVerticalScrollIndicator?: boolean;
-  keyExtractor?: (item: any) => string;
+
+  // Spacing
   columnSpacing?: number;
-  autoHeight?: boolean;
+  rowSpacing?: number;
+
+  // Scroll events
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
   onScrollBeginDrag?: () => void;
   onScrollEndDrag?: () => void;
   onMomentumScrollBegin?: () => void;
   onMomentumScrollEnd?: () => void;
+
+  // Dimensions
+  itemHeight?: number;
+  itemWidth?: number;
+
+  // Other
+  scrollEnabled?: boolean;
+  maintainVisibleContentPosition?: {
+    minIndexForVisible: number;
+    autoscrollToTopThreshold?: number;
+  };
 }
 
-export default function VirtualList({
-  items,
+export default function VirtualList<T>({
+  data,
   renderItem,
-  itemHeight = 60,
-  overscan = 3,
-  className = "",
+  getItemLayout,
+  horizontal = false,
+  numColumns = 1,
+  initialNumToRender = 10,
+  keyExtractor,
   onEndReached,
-  endReachedThreshold = 0.8,
+  onEndReachedThreshold = 0.8,
+  onRefresh,
+  refreshing = false,
+  ListHeaderComponent,
+  ListFooterComponent,
+  ListEmptyComponent,
+  ItemSeparatorComponent,
+  inverted = false,
   style,
+  contentContainerStyle,
+  className = "",
   height = "100%",
   width = "100%",
-  scrollEnabled = true,
+  showsHorizontalScrollIndicator = true,
   showsVerticalScrollIndicator = true,
-  keyExtractor,
-  columnSpacing = 0,
-  autoHeight = false,
+  columnSpacing = 8,
+  rowSpacing = 8,
   onScroll,
   onScrollBeginDrag,
   onScrollEndDrag,
   onMomentumScrollBegin,
   onMomentumScrollEnd,
-}: VirtualListProps<any>) {
+  itemHeight = 60,
+  itemWidth = 200,
+  scrollEnabled = true,
+  maintainVisibleContentPosition,
+}: VirtualListProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(refreshing);
   const [measuredItemHeight, setMeasuredItemHeight] = useState(itemHeight);
+  const [measuredItemWidth, setMeasuredItemWidth] = useState(itemWidth);
   const scrollTimeout = useRef<number>(0);
   const momentumTimeout = useRef<number>(0);
   const itemRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const lastTouchY = useRef<number>(0);
+  const lastTouchX = useRef<number>(0);
   const velocityY = useRef<number>(0);
+  const velocityX = useRef<number>(0);
   const lastScrollTop = useRef<number>(0);
+  const lastScrollLeft = useRef<number>(0);
   const lastScrollTime = useRef<number>(0);
+  const pullToRefreshThreshold = 60; // pixels
+  const refreshStartPosition = useRef<number>(0);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -68,6 +142,7 @@ export default function VirtualList({
       const entry = entries[0];
       if (entry) {
         setContainerHeight(entry.contentRect.height);
+        setContainerWidth(entry.contentRect.width);
       }
     };
 
@@ -79,39 +154,33 @@ export default function VirtualList({
     };
   }, []);
 
-  // Auto height measurement effect
   useEffect(() => {
-    if (autoHeight && items.length > 0) {
-      const firstItemRef = itemRefs.current.get(0);
-      if (firstItemRef) {
-        const rect = firstItemRef.getBoundingClientRect();
-        if (rect.height > 0 && rect.height !== measuredItemHeight) {
-          setMeasuredItemHeight(rect.height);
-        }
-      }
-    }
-  }, [autoHeight, items.length, measuredItemHeight]);
+    setIsRefreshing(refreshing);
+  }, [refreshing]);
 
-  // Handle touch events for mobile-like scrolling
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       if (!scrollEnabled) return;
 
       setIsDragging(true);
       lastTouchY.current = e.touches[0].clientY;
+      lastTouchX.current = e.touches[0].clientX;
       lastScrollTop.current = scrollTop;
+      lastScrollLeft.current = scrollLeft;
       lastScrollTime.current = Date.now();
+      refreshStartPosition.current = horizontal
+        ? e.touches[0].clientX
+        : e.touches[0].clientY;
 
       if (onScrollBeginDrag) {
         onScrollBeginDrag();
       }
 
-      // Clear any existing momentum scrolling
       if (momentumTimeout.current) {
         window.clearTimeout(momentumTimeout.current);
       }
     },
-    [scrollEnabled, scrollTop, onScrollBeginDrag]
+    [scrollEnabled, scrollTop, scrollLeft, onScrollBeginDrag, horizontal]
   );
 
   const handleTouchMove = useCallback(
@@ -119,22 +188,42 @@ export default function VirtualList({
       if (!scrollEnabled || !isDragging) return;
 
       const touchY = e.touches[0].clientY;
+      const touchX = e.touches[0].clientX;
       const deltaY = lastTouchY.current - touchY;
+      const deltaX = lastTouchX.current - touchX;
       const currentTime = Date.now();
       const timeDelta = currentTime - lastScrollTime.current;
 
+      // Handle pull-to-refresh
+      if (onRefresh && !isRefreshing && !horizontal) {
+        const pullDistance = touchY - refreshStartPosition.current;
+        if (pullDistance > pullToRefreshThreshold && scrollTop <= 0) {
+          setIsRefreshing(true);
+          onRefresh();
+        }
+      }
+
       if (timeDelta > 0) {
-        velocityY.current = deltaY / timeDelta;
+        if (horizontal) {
+          velocityX.current = deltaX / timeDelta;
+        } else {
+          velocityY.current = deltaY / timeDelta;
+        }
       }
 
       if (containerRef.current) {
-        containerRef.current.scrollTop += deltaY;
+        if (horizontal) {
+          containerRef.current.scrollLeft += deltaX;
+        } else {
+          containerRef.current.scrollTop += deltaY;
+        }
       }
 
       lastTouchY.current = touchY;
+      lastTouchX.current = touchX;
       lastScrollTime.current = currentTime;
     },
-    [scrollEnabled, isDragging]
+    [scrollEnabled, isDragging, horizontal, onRefresh, isRefreshing, scrollTop]
   );
 
   const handleTouchEnd = useCallback(() => {
@@ -146,13 +235,13 @@ export default function VirtualList({
     }
 
     // Apply momentum scrolling
-    if (Math.abs(velocityY.current) > 0.1) {
+    const velocity = horizontal ? velocityX.current : velocityY.current;
+    if (Math.abs(velocity) > 0.1) {
       if (onMomentumScrollBegin) {
         onMomentumScrollBegin();
       }
 
-      let momentum = velocityY.current * 500; // Adjust this multiplier to control momentum strength
-      let currentVelocity = velocityY.current;
+      let currentVelocity = velocity;
       let lastTime = Date.now();
 
       const applyMomentum = () => {
@@ -164,7 +253,11 @@ export default function VirtualList({
         currentVelocity *= 0.95;
 
         if (containerRef.current) {
-          containerRef.current.scrollTop += currentVelocity * deltaTime;
+          if (horizontal) {
+            containerRef.current.scrollLeft += currentVelocity * deltaTime;
+          } else {
+            containerRef.current.scrollTop += currentVelocity * deltaTime;
+          }
         }
 
         if (Math.abs(currentVelocity) > 0.01) {
@@ -180,6 +273,7 @@ export default function VirtualList({
     }
   }, [
     scrollEnabled,
+    horizontal,
     onScrollEndDrag,
     onMomentumScrollBegin,
     onMomentumScrollEnd,
@@ -189,122 +283,230 @@ export default function VirtualList({
     (event: React.UIEvent<HTMLDivElement>) => {
       if (!scrollEnabled) return;
 
-      const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
-      setScrollTop(scrollTop);
+      const {
+        scrollTop,
+        scrollLeft,
+        scrollHeight,
+        scrollWidth,
+        clientHeight,
+        clientWidth,
+      } = event.currentTarget;
+
+      if (horizontal) {
+        setScrollLeft(scrollLeft);
+      } else {
+        setScrollTop(scrollTop);
+      }
+
       setIsScrolling(true);
 
       if (onScroll) {
         onScroll(event);
       }
 
-      // Clear existing timeout
       if (scrollTimeout.current) {
         window.clearTimeout(scrollTimeout.current);
       }
 
-      // Set new timeout
       scrollTimeout.current = window.setTimeout(() => {
         setIsScrolling(false);
       }, 150);
 
       // Check if we've reached the end
       if (onEndReached) {
-        const threshold = scrollHeight * endReachedThreshold;
-        const currentPosition = scrollTop + clientHeight;
-        if (currentPosition >= threshold) {
-          onEndReached();
+        if (horizontal) {
+          const threshold = scrollWidth * onEndReachedThreshold;
+          const currentPosition = scrollLeft + clientWidth;
+          if (currentPosition >= threshold) {
+            onEndReached();
+          }
+        } else {
+          const threshold = scrollHeight * onEndReachedThreshold;
+          const currentPosition = scrollTop + clientHeight;
+          if (currentPosition >= threshold) {
+            onEndReached();
+          }
         }
       }
     },
-    [scrollEnabled, onScroll, onEndReached, endReachedThreshold]
+    [scrollEnabled, horizontal, onScroll, onEndReached, onEndReachedThreshold]
   );
+
+  // Calculate grid layout
+  const itemsPerRow = horizontal ? 1 : numColumns;
+  const rows = Math.ceil(data.length / itemsPerRow);
 
   // Calculate which items should be visible
-  const itemHeightWithSpacing = measuredItemHeight + columnSpacing;
+  const itemSize = horizontal ? measuredItemWidth : measuredItemHeight;
+  const spacing = horizontal ? columnSpacing : rowSpacing;
+  const itemSizeWithSpacing = itemSize + spacing;
+  const scroll = horizontal ? scrollLeft : scrollTop;
+  const containerSize = horizontal ? containerWidth : containerHeight;
+
   const startIndex = Math.max(
     0,
-    Math.floor(scrollTop / itemHeightWithSpacing) - overscan
+    Math.floor(scroll / itemSizeWithSpacing) * itemsPerRow
   );
   const endIndex = Math.min(
-    items.length,
-    Math.ceil((scrollTop + containerHeight) / itemHeightWithSpacing) + overscan
+    data.length,
+    Math.ceil((scroll + containerSize) / itemSizeWithSpacing) * itemsPerRow +
+      itemsPerRow
   );
 
-  const visibleItems = items.slice(startIndex, endIndex);
-  const totalHeight = items.length * itemHeightWithSpacing - columnSpacing; // Remove spacing from last item
-  const offsetY = startIndex * itemHeightWithSpacing;
-
-  // Fix height calculation for autoHeight mode
-  const containerHeight_calculated = autoHeight
-    ? Math.min(totalHeight, window.innerHeight * 0.7) // Limit to 70% of viewport height
-    : height;
+  const visibleData = data.slice(startIndex, endIndex);
+  const totalSize = rows * itemSize + (rows - 1) * spacing;
+  const offset = Math.floor(startIndex / itemsPerRow) * itemSizeWithSpacing;
 
   const containerStyle: React.CSSProperties = {
-    height: containerHeight_calculated,
+    height,
     width,
     overflow: scrollEnabled ? "auto" : "hidden",
     position: "relative",
-    WebkitOverflowScrolling: "touch", // Smooth scrolling on iOS
-    msOverflowStyle: showsVerticalScrollIndicator ? "auto" : "none", // Hide scrollbar in IE/Edge
-    scrollbarWidth: showsVerticalScrollIndicator ? "auto" : "none", // Hide scrollbar in Firefox
+    WebkitOverflowScrolling: "touch",
+    overflowY: !horizontal
+      ? showsVerticalScrollIndicator
+        ? "auto"
+        : "hidden"
+      : "hidden",
+    overflowX: horizontal
+      ? showsHorizontalScrollIndicator
+        ? "auto"
+        : "hidden"
+      : "hidden",
+    transform: inverted ? "scaleY(-1)" : undefined,
     ...style,
   };
 
-  // Add WebKit scrollbar styles via className instead
-  const scrollbarClass = !showsVerticalScrollIndicator ? "hide-scrollbar" : "";
+  const contentStyle: React.CSSProperties = {
+    height: horizontal ? "100%" : totalSize,
+    width: horizontal ? totalSize : "100%",
+    position: "relative",
+    pointerEvents: isScrolling ? "none" : "auto",
+    padding: spacing / 2,
+    boxSizing: "border-box",
+    ...contentContainerStyle,
+  };
+
+  const scrollbarClass = [
+    !showsVerticalScrollIndicator && !horizontal ? "hide-scrollbar-y" : "",
+    !showsHorizontalScrollIndicator && horizontal ? "hide-scrollbar-x" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  // Render empty list component if no data
+  if (data.length === 0 && ListEmptyComponent) {
+    return (
+      <div
+        ref={containerRef}
+        className={`virtual-list ${scrollbarClass}`}
+        style={containerStyle}
+      >
+        {ListEmptyComponent}
+      </div>
+    );
+  }
 
   return (
     <div
       ref={containerRef}
-      className={`virtual-list ${scrollbarClass} ${className}`}
+      className={`virtual-list ${scrollbarClass}`}
       onScroll={handleScroll}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       style={containerStyle}
     >
-      <div
-        style={{
-          height: totalHeight,
-          position: "relative",
-          pointerEvents: isScrolling ? "none" : "auto", // Optimize performance during scroll
-        }}
-      >
+      {isRefreshing && (
+        <div className="refresh-indicator">
+          <div className="refresh-spinner" />
+        </div>
+      )}
+
+      <div style={contentStyle}>
+        {ListHeaderComponent}
         <div
           style={{
-            transform: `translateY(${offsetY}px)`,
+            transform: horizontal
+              ? `translateX(${offset}px)`
+              : `translateY(${offset}px)`,
             willChange: "transform",
             position: "absolute",
             top: 0,
             left: 0,
-            right: 0,
+            right: horizontal ? undefined : 0,
+            bottom: !horizontal ? undefined : 0,
+            display: "flex",
+            flexDirection: horizontal ? "row" : "column",
+            flexWrap: horizontal ? "nowrap" : "wrap",
+            ...(inverted ? { transform: "scaleY(-1)" } : {}),
           }}
         >
-          {visibleItems.map((item, index) => {
+          {visibleData.map((item, index) => {
             const actualIndex = startIndex + index;
-            const isLastItem = actualIndex === items.length - 1;
+            const isLastItem = actualIndex === data.length - 1;
+            const isLastInRow = (actualIndex + 1) % numColumns === 0;
+            const rowIndex = Math.floor(actualIndex / numColumns);
+            const isLastRow = rowIndex === rows - 1;
 
-            return (
+            const itemStyle: React.CSSProperties = {
+              height: horizontal
+                ? "100%"
+                : getItemLayout?.(data, actualIndex)?.length ??
+                  measuredItemHeight,
+              width: !horizontal
+                ? `calc(${100 / numColumns}% - ${
+                    ((numColumns - 1) * columnSpacing) / numColumns
+                  }px)`
+                : getItemLayout?.(data, actualIndex)?.length ??
+                  measuredItemWidth,
+              marginBottom: !horizontal && !isLastRow ? rowSpacing : 0,
+              marginRight: horizontal || !isLastInRow ? columnSpacing : 0,
+              flexShrink: 0,
+              flexGrow: 0,
+              boxSizing: "border-box",
+            };
+
+            const separators = {
+              highlight: () => {},
+              unhighlight: () => {},
+              updateProps: () => {},
+            };
+
+            const itemContent = (
               <div
-                key={keyExtractor ? keyExtractor(item) : actualIndex}
+                key={
+                  keyExtractor ? keyExtractor(item, actualIndex) : actualIndex
+                }
                 className="virtual-list-item"
                 ref={(el) => {
-                  if (el && autoHeight) {
+                  if (el) {
                     itemRefs.current.set(actualIndex, el);
                   }
                 }}
-                style={{
-                  height: autoHeight ? "auto" : measuredItemHeight,
-                  minHeight: autoHeight ? measuredItemHeight : undefined,
-                  marginBottom: isLastItem ? 0 : columnSpacing,
-                  // Remove position relative that was causing issues
-                }}
+                style={itemStyle}
               >
-                {renderItem(item, actualIndex)}
+                {renderItem({ item, index: actualIndex, separators })}
               </div>
             );
+
+            if (ItemSeparatorComponent && !isLastItem) {
+              return (
+                <React.Fragment key={`${actualIndex}-fragment`}>
+                  {itemContent}
+                  <ItemSeparatorComponent
+                    highlighted={false}
+                    leadingItem={item}
+                  />
+                </React.Fragment>
+              );
+            }
+
+            return itemContent;
           })}
         </div>
+        {ListFooterComponent}
       </div>
     </div>
   );

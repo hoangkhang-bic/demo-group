@@ -22,10 +22,10 @@ export const ListCommunities = () => {
 
   return (
     <ListView
-      keyExtractor={(item) => item.id}
-      items={communities || []}
+      keyExtractor={(item: any) => item.id}
+      data={communities || []}
       renderItem={renderItem}
-      columnSpacing={10}
+      rowSpacing={20}
     />
   );
 };

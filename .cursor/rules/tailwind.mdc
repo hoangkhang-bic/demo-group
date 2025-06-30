@@ -1,5 +1,6 @@
 ---
-description:
-globs:
+description: 
+globs: tsx,jsx
 alwaysApply: false
 ---
+**Must** use tailwinds if could instend bare css

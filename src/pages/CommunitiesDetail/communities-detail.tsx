@@ -4,23 +4,12 @@ import View from "@/components/View/View";
 import MbHeader from "@/components/bic-components/mb-header/mb-header";
 import { useNavigate } from "react-router";
 import { useCommunityData } from "@store/communitiesStore";
+import PlatformManager, { withPlatformManager } from "@/utils/Platform.manager";
+import CommunitiesDetailWeb from "./communities-detail.web";
+import CommunitiesDetailMb from "./communities-detail.mb";
 
-export const CommunitiesDetail = () => {
-  const { id } = useParams();
-  // const { community } = useCommunityData(id as string);
-
-  const navigate = useNavigate();
-  return (
-    <PageAndroidTransition>
-      <View flexDirection="column">
-        <MbHeader title="Communities Detail" onBackClick={() => navigate(-1)} />
-        <View flexDirection="column" overflow="auto" flex={1}>
-          <div>CommunitiesDetail</div>
-          <div>{id}</div>
-        </View>
-      </View>
-    </PageAndroidTransition>
-  );
-};
-
+const CommunitiesDetail = withPlatformManager(
+  CommunitiesDetailMb,
+  CommunitiesDetailWeb
+);
 export default CommunitiesDetail;

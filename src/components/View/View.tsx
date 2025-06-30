@@ -6,21 +6,46 @@ import {
   useIsDesktop,
 } from "../../hooks/useMediaQuery";
 
+type FlexDirection = "row" | "column" | "row-reverse" | "column-reverse";
+type JustifyContent =
+  | "flex-start"
+  | "flex-end"
+  | "center"
+  | "space-between"
+  | "space-around"
+  | "space-evenly";
+type AlignItems = "flex-start" | "flex-end" | "center" | "stretch" | "baseline";
+type Position = "absolute" | "relative" | "fixed" | "sticky";
+type FlexWrap = "nowrap" | "wrap" | "wrap-reverse";
+type Overflow = "visible" | "hidden" | "scroll" | "auto";
+type Variant = "primary" | "secondary" | "light" | "dark";
+type DeviceType = "mobile" | "tablet" | "desktop";
+
 interface ViewProps {
+  // Required props
   children: React.ReactNode;
+
+  // Common props
   style?: React.CSSProperties;
   className?: string;
+  dataTestId?: string;
+
   // Layout props
   flex?: number | boolean;
-  flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
-  justifyContent?:
-    | "flex-start"
-    | "flex-end"
-    | "center"
-    | "space-between"
-    | "space-around"
-    | "space-evenly";
-  alignItems?: "flex-start" | "flex-end" | "center" | "stretch" | "baseline";
+  flexDirection?: FlexDirection;
+  justifyContent?: JustifyContent;
+  alignItems?: AlignItems;
+  flexWrap?: FlexWrap;
+  flexGrow?: number;
+  flexShrink?: number;
+  flexBasis?: string | number;
+  gap?: number | string;
+  fitContent?: boolean;
+  inline?: boolean;
+  center?: boolean;
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+
   // Spacing props
   padding?: number | string;
   paddingHorizontal?: number | string;
@@ -28,100 +53,105 @@ interface ViewProps {
   margin?: number | string;
   marginHorizontal?: number | string;
   marginVertical?: number | string;
-  // Color props
-  backgroundColor?: string;
-  // Size props
+
+  // Dimension props
   width?: number | string;
   height?: number | string;
-  // Border props
+
+  // Visual props
+  backgroundColor?: string;
   borderRadius?: number | string;
   borderWidth?: number;
   borderColor?: string;
+  elevation?: number;
+  opacity?: number;
+  overflow?: Overflow;
+  transform?: string;
+  transition?: string;
+  variant?: Variant;
+
   // Position props
-  position?: "absolute" | "relative" | "fixed" | "sticky";
+  position?: Position;
   top?: number | string;
   left?: number | string;
   right?: number | string;
   bottom?: number | string;
   zIndex?: number;
-  // Other props
+
+  // Special props
   safeArea?: boolean;
-  center?: boolean;
-  gap?: number | string;
-  // Width behavior props
-  fitContent?: boolean;
-  inline?: boolean;
-  // Flex specific props
-  flexWrap?: "nowrap" | "wrap" | "wrap-reverse";
-  flexGrow?: number;
-  flexShrink?: number;
-  flexBasis?: string | number;
-  // Shadow props
-  elevation?: number;
-  // Opacity
-  opacity?: number;
-  // Overflow
-  overflow?: "visible" | "hidden" | "scroll" | "auto";
-  // Transform
-  transform?: string;
-  // Animation
-  transition?: string;
-  // Variants
-  variant?: "primary" | "secondary" | "light" | "dark";
-  // Responsive display
+
+  // Responsive props
   hideOnMobile?: boolean;
   hideOnTablet?: boolean;
   hideOnDesktop?: boolean;
-  showOnlyOn?: "mobile" | "tablet" | "desktop";
-  // Mobile class names
+  showOnlyOn?: DeviceType;
   mobileClassName?: string;
   tabletClassName?: string;
   desktopClassName?: string;
-  // Data attributes
-  dataTestId?: string;
 }
 
 export default function View({
+  // Required props
   children,
+
+  // Common props
   style,
   className = "",
+  dataTestId,
+
+  // Layout props
   flex,
   flexDirection,
   justifyContent,
   alignItems,
+  flexWrap,
+  flexGrow,
+  flexShrink,
+  flexBasis,
+  gap,
+  fitContent = false,
+  inline = false,
+  center,
+  fullWidth = false,
+  fullHeight = false,
+
+  // Spacing props
   padding,
   paddingHorizontal,
   paddingVertical,
   margin,
   marginHorizontal,
   marginVertical,
-  backgroundColor,
+
+  // Dimension props
   width,
   height,
+
+  // Visual props
+  backgroundColor,
   borderRadius,
   borderWidth,
   borderColor,
-  position,
-  top,
-  left,
-  right,
-  bottom,
-  zIndex,
-  safeArea,
-  center,
-  gap,
-  fitContent = false,
-  inline = false,
-  flexWrap,
-  flexGrow,
-  flexShrink,
-  flexBasis,
   elevation,
   opacity,
   overflow,
   transform,
   transition,
   variant,
+
+  // Position props
+  position,
+  top,
+  left,
+  right,
+  bottom,
+  zIndex,
+
+  // Special props
+  safeArea,
+
+  // Responsive props
   hideOnMobile,
   hideOnTablet,
   hideOnDesktop,
@@ -129,14 +159,14 @@ export default function View({
   mobileClassName,
   tabletClassName,
   desktopClassName,
-  dataTestId,
+
   ...otherProps
 }: ViewProps) {
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
   const isDesktop = useIsDesktop();
 
-  // Skip rendering if component should be hidden based on responsive props
+  // Handle responsive visibility
   if (
     (hideOnMobile && isMobile) ||
     (hideOnTablet && isTablet) ||
@@ -148,143 +178,106 @@ export default function View({
     return null;
   }
 
-  // Build dynamic styles based on props
+  // Build dynamic styles
   const dynamicStyles: React.CSSProperties = {
-    // Display and flex
-    display: inline ? "inline-flex" : "flex", // Always use flex display
-    ...(flex !== undefined
-      ? {
-          flex: typeof flex === "boolean" ? 1 : flex,
-        }
-      : {}),
-    ...(flexDirection ? { flexDirection } : {}),
-    ...(justifyContent ? { justifyContent } : {}),
-    ...(alignItems ? { alignItems } : {}),
+    // Layout styles
+    display: inline ? "inline-flex" : "flex",
+    ...(flex !== undefined && { flex: typeof flex === "boolean" ? 1 : flex }),
+    ...(flexDirection && { flexDirection }),
+    ...(justifyContent && { justifyContent }),
+    ...(alignItems && { alignItems }),
+    ...(flexWrap && { flexWrap }),
+    ...(flexGrow !== undefined && { flexGrow }),
+    ...(flexShrink !== undefined && { flexShrink }),
+    ...(flexBasis !== undefined && { flexBasis }),
+    ...(gap !== undefined && {
+      gap: typeof gap === "number" ? `${gap}px` : gap,
+    }),
 
-    // Spacing
-    ...(padding !== undefined ? { padding } : {}),
-    ...(paddingHorizontal !== undefined
-      ? { paddingLeft: paddingHorizontal, paddingRight: paddingHorizontal }
-      : {}),
-    ...(paddingVertical !== undefined
-      ? { paddingTop: paddingVertical, paddingBottom: paddingVertical }
-      : {}),
-    ...(margin !== undefined ? { margin } : {}),
-    ...(marginHorizontal !== undefined
-      ? { marginLeft: marginHorizontal, marginRight: marginHorizontal }
-      : {}),
-    ...(marginVertical !== undefined
-      ? { marginTop: marginVertical, marginBottom: marginVertical }
-      : {}),
+    // Spacing styles
+    ...(padding !== undefined && { padding }),
+    ...(paddingHorizontal && {
+      paddingLeft: paddingHorizontal,
+      paddingRight: paddingHorizontal,
+    }),
+    ...(paddingVertical && {
+      paddingTop: paddingVertical,
+      paddingBottom: paddingVertical,
+    }),
+    ...(margin !== undefined && { margin }),
+    ...(marginHorizontal && {
+      marginLeft: marginHorizontal,
+      marginRight: marginHorizontal,
+    }),
+    ...(marginVertical && {
+      marginTop: marginVertical,
+      marginBottom: marginVertical,
+    }),
 
-    // Colors and borders
-    ...(backgroundColor ? { backgroundColor } : {}),
-    ...(borderWidth !== undefined
-      ? {
-          borderWidth: `${borderWidth}px`,
-          borderStyle: "solid",
-          borderColor: borderColor ?? "currentColor",
-        }
-      : {}),
-    ...(borderColor && !borderWidth
-      ? {
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderColor,
-        }
-      : {}),
-    ...(borderRadius !== undefined ? { borderRadius } : {}),
+    // Dimension styles
+    ...(width !== undefined && { width }),
+    ...(height !== undefined && { height }),
+    ...(fullWidth && { width: "100vw" }),
+    ...(fullHeight && { height: "100vh" }),
 
-    // Dimensions - only apply if explicitly set
-    ...(width !== undefined ? { width } : {}),
-    ...(height !== undefined ? { height } : {}),
+    // Visual styles
+    ...(backgroundColor && { backgroundColor }),
+    ...(borderRadius !== undefined && { borderRadius }),
+    ...(borderWidth !== undefined && {
+      borderWidth: `${borderWidth}px`,
+      borderStyle: "solid",
+      borderColor: borderColor ?? "currentColor",
+    }),
+    ...(borderColor &&
+      !borderWidth && {
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor,
+      }),
+    ...(elevation !== undefined && {
+      boxShadow: `0 ${elevation}px ${elevation * 2}px rgba(0, 0, 0, 0.2)`,
+    }),
+    ...(opacity !== undefined && { opacity }),
+    ...(overflow && { overflow }),
+    ...(transform && { transform }),
+    ...(transition && { transition }),
 
-    // Position
-    ...(position ? { position } : {}),
-    ...(top !== undefined ? { top } : {}),
-    ...(left !== undefined ? { left } : {}),
-    ...(right !== undefined ? { right } : {}),
-    ...(bottom !== undefined ? { bottom } : {}),
-    ...(zIndex !== undefined ? { zIndex } : {}),
+    // Position styles
+    ...(position && { position }),
+    ...(top !== undefined && { top }),
+    ...(left !== undefined && { left }),
+    ...(right !== undefined && { right }),
+    ...(bottom !== undefined && { bottom }),
+    ...(zIndex !== undefined && { zIndex }),
 
-    // Flex specific
-    ...(flexWrap ? { flexWrap } : {}),
-    ...(flexGrow !== undefined ? { flexGrow } : {}),
-    ...(flexShrink !== undefined ? { flexShrink } : {}),
-    ...(flexBasis !== undefined ? { flexBasis } : {}),
-
-    // Gap
-    ...(gap !== undefined
-      ? {
-          gap: typeof gap === "number" ? `${gap}px` : gap,
-        }
-      : {}),
-
-    // Fit content
-    ...(fitContent
-      ? {
-          width: "fit-content",
-          height: "fit-content",
-          minWidth: "min-content",
-          minHeight: "min-content",
-          maxWidth: "max-content",
-          maxHeight: "max-content",
-        }
-      : {}),
-
-    // Shadow (elevation)
-    ...(elevation !== undefined
-      ? {
-          boxShadow: `0 ${elevation}px ${elevation * 2}px rgba(0, 0, 0, 0.2)`,
-        }
-      : {}),
-
-    // Other properties
-    ...(opacity !== undefined ? { opacity } : {}),
-    ...(overflow ? { overflow } : {}),
-    ...(transform ? { transform } : {}),
-    ...(transition ? { transition } : {}),
+    // Fit content styles
+    ...(fitContent && {
+      width: "fit-content",
+      height: "fit-content",
+      minWidth: "min-content",
+      minHeight: "min-content",
+      maxWidth: "max-content",
+      maxHeight: "max-content",
+    }),
 
     // Custom styles
     ...style,
   };
 
-  // Build class names based on props
-  let classNames = ["rn-view"];
-
-  if (variant) {
-    classNames.push(`rn-view--${variant}`);
-  }
-
-  if (safeArea) {
-    classNames.push("rn-view--safe-area");
-  }
-
-  if (center) {
-    classNames.push("rn-view--center");
-  }
-
-  if (flexDirection === "row") {
-    classNames.push("rn-view--row");
-  }
-
-  // Add responsive classNames
-  if (isMobile && mobileClassName) {
-    classNames.push(mobileClassName);
-  }
-
-  if (isTablet && tabletClassName) {
-    classNames.push(tabletClassName);
-  }
-
-  if (isDesktop && desktopClassName) {
-    classNames.push(desktopClassName);
-  }
-
-  // Add base className last
-  if (className) {
-    classNames.push(className);
-  }
+  // Build class names
+  const classNames = [
+    "rn-view",
+    variant && `rn-view--${variant}`,
+    safeArea && "rn-view--safe-area",
+    center && "rn-view--center",
+    flexDirection === "row" && "rn-view--row",
+    fullWidth && "rn-view--full-width",
+    fullHeight && "rn-view--full-height",
+    isMobile && mobileClassName,
+    isTablet && tabletClassName,
+    isDesktop && desktopClassName,
+    className,
+  ].filter(Boolean);
 
   return (
     <div

@@ -7,15 +7,33 @@
     overscroll-behavior-y: contain;
     overflow-y: auto;
     overflow-x: hidden;
+    position: relative;
 }
 
-.virtual-list.hide-scrollbar::-webkit-scrollbar {
+/* Hide vertical scrollbar */
+.virtual-list.hide-scrollbar-y {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+}
+
+.virtual-list.hide-scrollbar-y::-webkit-scrollbar {
+    width: 0;
     display: none;
 }
 
-.virtual-list.hide-scrollbar {
-    -ms-overflow-style: none;
+/* Hide horizontal scrollbar */
+.virtual-list.hide-scrollbar-x {
     scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+}
+
+.virtual-list.hide-scrollbar-x::-webkit-scrollbar {
+    height: 0;
+    display: none;
 }
 
 /* Add iOS-style momentum scrolling */
@@ -35,6 +53,8 @@
     transform: translateZ(0);
     -webkit-font-smoothing: antialiased;
     backface-visibility: hidden;
+    box-sizing: border-box;
+    position: relative;
 }
 
 /* Smooth transitions for column spacing */
@@ -48,4 +68,44 @@
     overflow: visible;
     /* Ensure children don't interfere with parent scrolling */
     pointer-events: auto;
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Optimize performance during scroll */
+.virtual-list-item * {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.refresh-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.refresh-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

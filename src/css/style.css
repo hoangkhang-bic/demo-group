@@ -133,7 +133,14 @@
     --top-header-height: 7%;
     /* 7% of the viewport height */
     --top-header-height-desktop: 3%;
+
     /* 2% of the viewport height */
+    --avatar-size: 100px;
+    --avatar-size-desktop: 150px;
+    --avatar-size-mobile: 90px;
+    --avatar-size-mobile-and-tablet: 100px;
+    --avatar-size-desktop-and-tablet: 150px;
+    --avatar-size-desktop-and-mobile: 150px;
 }
 
 /* Theme variables for potential dark mode or theme switching */
