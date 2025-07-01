@@ -11,6 +11,7 @@ import {
 import View from "@/components/View/View";
 import Image from "@/components/Image/Image";
 import VirtualList from "@/components/virtual-list/virtual-list";
+import { Touchable } from "@/components/touchable/touchable";
 
 interface HeaderMobileProps {
   coverImage?: string;
@@ -41,6 +42,7 @@ export const HeaderMobile: React.FC<HeaderMobileProps> = ({
   communityId,
   unreadMessages = 0,
 }) => {
+  console.log(communityId);
   const navigate = useNavigate();
   const { groupId } = useParams();
   const gotoGroup = () => {
@@ -88,7 +90,6 @@ export const HeaderMobile: React.FC<HeaderMobileProps> = ({
   };
   return (
     <View className="w-full flex flex-col">
-      c
       <div className="flex flex-col items-enter w-full">
         <div className="w-full h-[187.5px] relative">
           <img
@@ -176,12 +177,11 @@ export const HeaderMobile: React.FC<HeaderMobileProps> = ({
         >
           <div className="flex gap-2 overflow-x-auto">
             {tabBar.map((item) => (
-              <div
-                key={item.name}
-                className="h-8 px-4 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center text-gray-900 text-sm whitespace-nowrap"
-              >
-                {item.name}
-              </div>
+              <Touchable key={item.name} onPress={() => navigateToPage(item)}>
+                <div className="h-8 px-4 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center text-gray-900 text-sm whitespace-nowrap">
+                  {item.name}
+                </div>
+              </Touchable>
             ))}
           </div>
         </View>

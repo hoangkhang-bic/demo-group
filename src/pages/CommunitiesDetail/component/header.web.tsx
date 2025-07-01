@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/useMediaQuery";
 import Image from "@/components/Image/Image";
 import Avatar from "@/components/Image/avatar";
@@ -27,6 +27,18 @@ export const Header: React.FC<HeaderProps> = ({
   onTabChange,
 }) => {
   const isMobile = useIsMobile();
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const headerHeight = isMobile ? 200 : 400; // Match the header height
+      const scrollPosition = window.scrollY;
+      setIsSticky(scrollPosition > headerHeight);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
 
   const tabs = [
     { key: "timeline", title: "Timeline" },
@@ -151,7 +163,11 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div
-        className={`mt-2 ${isMobile ? "px-2" : ""} border-b border-[#E5E7EB]`}
+        className={`${
+          isSticky
+            ? "fixed top-0 left-0 right-0 bg-white shadow-md z-50"
+            : "mt-2"
+        } ${isMobile ? "px-2" : ""} border-b border-[#E5E7EB]`}
       >
         <View
           flex={1}
@@ -165,7 +181,11 @@ export const Header: React.FC<HeaderProps> = ({
             <View key={tab.key}>
               <Touchable
                 onPress={() => onTabChange?.(tab.key)}
-                className="text-sm font-medium text-[#6E79B9]"
+                className={`text-sm font-medium ${
+                  activeTab === tab.key
+                    ? "text-[#874ECF] border-b-2 border-[#874ECF]"
+                    : "text-[#6E79B9]"
+                }`}
               >
                 {tab.title}
               </Touchable>

@@ -9,7 +9,7 @@ import {
   useCommunitiesStore,
   useUserCommunitiesData,
 } from "@/store/communitiesStore";
-import { Group, SubGroup } from "@services/communities-services";
+import { Group } from "@services/communities-services";
 import SideBar from "./component/side-bar";
 import { TopHeaderWeb } from "../TopHeader";
 
@@ -92,13 +92,13 @@ const CommunitiesWeb: React.FC = () => {
       .slice(0, 8)
       .flatMap(
         (community, communityIndex) =>
-          community.subGroups
+          community.groups
             ?.slice(0, 2)
-            .map((subGroup: SubGroup, groupIndex: number) => ({
-              id: `${subGroup.id}-pending`,
-              name: subGroup.name,
+            .map((group: Group, groupIndex: number) => ({
+              id: `${group.id}-pending`,
+              name: group.name,
               parentCommunity: community.name,
-              members: `${subGroup.memberCount}`,
+              members: `${group.memberCount}`,
               type: "group" as const,
               status:
                 (communityIndex + groupIndex) % 2 === 0

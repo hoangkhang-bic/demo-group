@@ -12,6 +12,8 @@ import { PinCommunities } from "@pages/PinCommunities/pin-communities";
 import CreateCommunityPage from "@pages/CreateCommunityPage/CreateCommunityPage";
 import CommunitiesDetail from "@pages/CommunitiesDetail/communities-detail";
 import Communities from "@pages/CommunitiesPage/Communities";
+import GroupDetail from "@/pages/Groups/GroupDetail";
+import Groups from "@/pages/GroupsPage/GroupPage.mb";
 
 // Define routes using createRoutesFromElements for React Router v7a
 const router = () => {
@@ -33,6 +35,8 @@ const router = () => {
       <Route path="/pin-communities" element={<PinCommunities />} />
       <Route path="/create-community" element={<CreateCommunityPage />} />
       <Route path="/communities/:id" element={<CommunitiesDetail />} />
+      <Route path="/groups" element={<Groups />} />
+      <Route path="/groups/:id" element={<GroupDetail />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

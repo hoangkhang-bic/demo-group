@@ -3,7 +3,10 @@ import { HeaderMobile } from "./component/header.mb";
 import View from "@/components/View/View";
 import ListCommunities from "../CommunitiesPage/component/list-communities";
 import { BodyCommunitiesDetailMb } from "./component/body.mb";
+import { useParams } from "react-router";
 export const CommunitiesDetailMb = () => {
+  const { id } = useParams();
+  console.log(id);
   return (
     <View flex className="h-screen">
       <MbHeader title="CommunitiesDetailMb" />
@@ -17,6 +20,7 @@ export const CommunitiesDetailMb = () => {
         groupName={"Community Name"}
         isPrivate={false}
         memberCount={0}
+        communityId={id || "123456"}
       />
       <BodyCommunitiesDetailMb />
     </View>

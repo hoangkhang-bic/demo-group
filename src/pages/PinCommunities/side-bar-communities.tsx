@@ -5,6 +5,7 @@ import { Touchable } from "../../components/touchable/touchable";
 import { FaSearch, FaPlus, FaCheck, FaMapPin } from "react-icons/fa";
 import { useGetTopHeaderInset } from "../../hooks/useSafeAreaInsets";
 import { useNavigate } from "react-router";
+import { Group } from "@/services/group-services";
 
 interface Community {
   id: string;
@@ -13,6 +14,7 @@ interface Community {
   isVerified?: boolean;
   isPinned?: boolean;
   notificationCount?: number;
+  groups?: Group[];
 }
 
 interface CommunitiesSidebarProps {

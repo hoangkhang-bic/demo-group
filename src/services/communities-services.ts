@@ -10,36 +10,27 @@ export interface GroupMember {
   avatar?: string;
 }
 
-export interface SubGroup {
+export interface Community {
   id: string;
   name: string;
-  type: string;
-  icon: string;
-  color: string;
-  memberCount: number;
-  parentId: string;
+  type?: string;
+  icon?: string;
+  color?: string;
+  memberCount?: number;
   isExpanded?: boolean;
+  avatarUrl?: string;
+  isVerified?: boolean;
+  isPinned?: boolean;
+  level?: number;
+  groups?: Group[];
   members?: GroupMember[];
-  subGroups?: SubGroup[];
 }
 
-export interface Group {
-  id: string;
-  name: string;
-  type: string;
-  icon: string;
-  color: string;
-  memberCount: number;
-  isExpanded: boolean;
-  members?: GroupMember[];
-  subGroups?: SubGroup[];
+export interface Group extends Community {
+  parentId?: string;
+  description?: string;
 }
 
-export interface GroupsData {
-  groups: Group[];
-}
-
-// Store sync callback type
 export type StoreUpdateCallback = {
   setCommunities?: (communities: Group[]) => void;
   setCurrentCommunity?: (community: Group) => void;
@@ -86,7 +77,7 @@ const handleApiError = (response: Response, context: string): void => {
 };
 
 // API Functions
-const fetchCommunities = async (): Promise<Group[]> => {
+const fetchCommunities = async (): Promise<Community[]> => {
   if (USE_MOCK_API) {
     await simulateApiDelay();
     return allCommunities;
@@ -100,7 +91,7 @@ const fetchCommunities = async (): Promise<Group[]> => {
   return response.json();
 };
 
-const fetchCommunityById = async (communityId: string): Promise<Group> => {
+const fetchCommunityById = async (communityId: string): Promise<Community> => {
   if (USE_MOCK_API) {
     await simulateApiDelay(500);
     const community = getMockCommunityById(communityId);
@@ -145,6 +136,8 @@ const updateCommunityById = async ({ communityId, data }: { communityId: string;
 const fetchCommunitiesWithLength = async (length: number): Promise<Group[]> => {
   if (USE_MOCK_API) {
     await simulateApiDelay();
+    console.log("fetchCommunitiesWithLength", length);
+    console.log("getCommunitiesWithLength =====>", getCommunitiesWithLength(length));
     return getCommunitiesWithLength(length);
   }
   

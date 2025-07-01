@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import "./View.css";
 import {
   useIsMobile,
@@ -21,7 +21,7 @@ type Overflow = "visible" | "hidden" | "scroll" | "auto";
 type Variant = "primary" | "secondary" | "light" | "dark";
 type DeviceType = "mobile" | "tablet" | "desktop";
 
-interface ViewProps {
+interface ViewProps extends React.HTMLAttributes<HTMLDivElement> {
   // Required props
   children: React.ReactNode;
 
@@ -89,204 +89,240 @@ interface ViewProps {
   mobileClassName?: string;
   tabletClassName?: string;
   desktopClassName?: string;
+
+  // Hover event callbacks
+  onHoverIn?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onHoverOut?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onHoverChange?: (
+    isHovering: boolean,
+    event: React.MouseEvent<HTMLDivElement>
+  ) => void;
 }
 
-export default function View({
-  // Required props
-  children,
+const View = forwardRef<HTMLDivElement, ViewProps>(
+  (
+    {
+      // Required props
+      children,
 
-  // Common props
-  style,
-  className = "",
-  dataTestId,
+      // Common props
+      style,
+      className = "",
+      dataTestId,
 
-  // Layout props
-  flex,
-  flexDirection,
-  justifyContent,
-  alignItems,
-  flexWrap,
-  flexGrow,
-  flexShrink,
-  flexBasis,
-  gap,
-  fitContent = false,
-  inline = false,
-  center,
-  fullWidth = false,
-  fullHeight = false,
+      // Layout props
+      flex,
+      flexDirection,
+      justifyContent,
+      alignItems,
+      flexWrap,
+      flexGrow,
+      flexShrink,
+      flexBasis,
+      gap,
+      fitContent = false,
+      inline = false,
+      center,
+      fullWidth = false,
+      fullHeight = false,
 
-  // Spacing props
-  padding,
-  paddingHorizontal,
-  paddingVertical,
-  margin,
-  marginHorizontal,
-  marginVertical,
+      // Spacing props
+      padding,
+      paddingHorizontal,
+      paddingVertical,
+      margin,
+      marginHorizontal,
+      marginVertical,
 
-  // Dimension props
-  width,
-  height,
+      // Dimension props
+      width,
+      height,
 
-  // Visual props
-  backgroundColor,
-  borderRadius,
-  borderWidth,
-  borderColor,
-  elevation,
-  opacity,
-  overflow,
-  transform,
-  transition,
-  variant,
+      // Visual props
+      backgroundColor,
+      borderRadius,
+      borderWidth,
+      borderColor,
+      elevation,
+      opacity,
+      overflow,
+      transform,
+      transition,
+      variant,
 
-  // Position props
-  position,
-  top,
-  left,
-  right,
-  bottom,
-  zIndex,
+      // Position props
+      position,
+      top,
+      left,
+      right,
+      bottom,
+      zIndex,
 
-  // Special props
-  safeArea,
+      // Special props
+      safeArea,
 
-  // Responsive props
-  hideOnMobile,
-  hideOnTablet,
-  hideOnDesktop,
-  showOnlyOn,
-  mobileClassName,
-  tabletClassName,
-  desktopClassName,
+      // Responsive props
+      hideOnMobile,
+      hideOnTablet,
+      hideOnDesktop,
+      showOnlyOn,
+      mobileClassName,
+      tabletClassName,
+      desktopClassName,
 
-  ...otherProps
-}: ViewProps) {
-  const isMobile = useIsMobile();
-  const isTablet = useIsTablet();
-  const isDesktop = useIsDesktop();
+      // Hover event callbacks
+      onHoverIn,
+      onHoverOut,
+      onHoverChange,
 
-  // Handle responsive visibility
-  if (
-    (hideOnMobile && isMobile) ||
-    (hideOnTablet && isTablet) ||
-    (hideOnDesktop && isDesktop) ||
-    (showOnlyOn === "mobile" && !isMobile) ||
-    (showOnlyOn === "tablet" && !isTablet) ||
-    (showOnlyOn === "desktop" && !isDesktop)
-  ) {
-    return null;
-  }
+      ...otherProps
+    },
+    ref
+  ) => {
+    const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
+    const isDesktop = useIsDesktop();
 
-  // Build dynamic styles
-  const dynamicStyles: React.CSSProperties = {
-    // Layout styles
-    display: inline ? "inline-flex" : "flex",
-    ...(flex !== undefined && { flex: typeof flex === "boolean" ? 1 : flex }),
-    ...(flexDirection && { flexDirection }),
-    ...(justifyContent && { justifyContent }),
-    ...(alignItems && { alignItems }),
-    ...(flexWrap && { flexWrap }),
-    ...(flexGrow !== undefined && { flexGrow }),
-    ...(flexShrink !== undefined && { flexShrink }),
-    ...(flexBasis !== undefined && { flexBasis }),
-    ...(gap !== undefined && {
-      gap: typeof gap === "number" ? `${gap}px` : gap,
-    }),
+    // Handle hover events
+    const handleMouseEnter = (event: React.MouseEvent<HTMLDivElement>) => {
+      onHoverIn?.(event);
+      onHoverChange?.(true, event);
+    };
 
-    // Spacing styles
-    ...(padding !== undefined && { padding }),
-    ...(paddingHorizontal && {
-      paddingLeft: paddingHorizontal,
-      paddingRight: paddingHorizontal,
-    }),
-    ...(paddingVertical && {
-      paddingTop: paddingVertical,
-      paddingBottom: paddingVertical,
-    }),
-    ...(margin !== undefined && { margin }),
-    ...(marginHorizontal && {
-      marginLeft: marginHorizontal,
-      marginRight: marginHorizontal,
-    }),
-    ...(marginVertical && {
-      marginTop: marginVertical,
-      marginBottom: marginVertical,
-    }),
+    const handleMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+      onHoverOut?.(event);
+      onHoverChange?.(false, event);
+    };
 
-    // Dimension styles
-    ...(width !== undefined && { width }),
-    ...(height !== undefined && { height }),
-    ...(fullWidth && { width: "100vw" }),
-    ...(fullHeight && { height: "100vh" }),
+    // Handle responsive visibility
+    if (
+      (hideOnMobile && isMobile) ||
+      (hideOnTablet && isTablet) ||
+      (hideOnDesktop && isDesktop) ||
+      (showOnlyOn === "mobile" && !isMobile) ||
+      (showOnlyOn === "tablet" && !isTablet) ||
+      (showOnlyOn === "desktop" && !isDesktop)
+    ) {
+      return null;
+    }
 
-    // Visual styles
-    ...(backgroundColor && { backgroundColor }),
-    ...(borderRadius !== undefined && { borderRadius }),
-    ...(borderWidth !== undefined && {
-      borderWidth: `${borderWidth}px`,
-      borderStyle: "solid",
-      borderColor: borderColor ?? "currentColor",
-    }),
-    ...(borderColor &&
-      !borderWidth && {
-        borderWidth: "1px",
-        borderStyle: "solid",
-        borderColor,
+    // Build dynamic styles
+    const dynamicStyles: React.CSSProperties = {
+      // Layout styles
+      display: inline ? "inline-flex" : "flex",
+      ...(flex !== undefined && { flex: typeof flex === "boolean" ? 1 : flex }),
+      ...(flexDirection && { flexDirection }),
+      ...(justifyContent && { justifyContent }),
+      ...(alignItems && { alignItems }),
+      ...(flexWrap && { flexWrap }),
+      ...(flexGrow !== undefined && { flexGrow }),
+      ...(flexShrink !== undefined && { flexShrink }),
+      ...(flexBasis !== undefined && { flexBasis }),
+      ...(gap !== undefined && {
+        gap: typeof gap === "number" ? `${gap}px` : gap,
       }),
-    ...(elevation !== undefined && {
-      boxShadow: `0 ${elevation}px ${elevation * 2}px rgba(0, 0, 0, 0.2)`,
-    }),
-    ...(opacity !== undefined && { opacity }),
-    ...(overflow && { overflow }),
-    ...(transform && { transform }),
-    ...(transition && { transition }),
 
-    // Position styles
-    ...(position && { position }),
-    ...(top !== undefined && { top }),
-    ...(left !== undefined && { left }),
-    ...(right !== undefined && { right }),
-    ...(bottom !== undefined && { bottom }),
-    ...(zIndex !== undefined && { zIndex }),
+      // Spacing styles
+      ...(padding !== undefined && { padding }),
+      ...(paddingHorizontal && {
+        paddingLeft: paddingHorizontal,
+        paddingRight: paddingHorizontal,
+      }),
+      ...(paddingVertical && {
+        paddingTop: paddingVertical,
+        paddingBottom: paddingVertical,
+      }),
+      ...(margin !== undefined && { margin }),
+      ...(marginHorizontal && {
+        marginLeft: marginHorizontal,
+        marginRight: marginHorizontal,
+      }),
+      ...(marginVertical && {
+        marginTop: marginVertical,
+        marginBottom: marginVertical,
+      }),
 
-    // Fit content styles
-    ...(fitContent && {
-      width: "fit-content",
-      height: "fit-content",
-      minWidth: "min-content",
-      minHeight: "min-content",
-      maxWidth: "max-content",
-      maxHeight: "max-content",
-    }),
+      // Dimension styles
+      ...(width !== undefined && { width }),
+      ...(height !== undefined && { height }),
+      ...(fullWidth && { width: "100vw" }),
+      ...(fullHeight && { height: "100vh" }),
 
-    // Custom styles
-    ...style,
-  };
+      // Visual styles
+      ...(backgroundColor && { backgroundColor }),
+      ...(borderRadius !== undefined && { borderRadius }),
+      ...(borderWidth !== undefined && {
+        borderWidth: `${borderWidth}px`,
+        borderStyle: "solid",
+        borderColor: borderColor ?? "currentColor",
+      }),
+      ...(borderColor &&
+        !borderWidth && {
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor,
+        }),
+      ...(elevation !== undefined && {
+        boxShadow: `0 ${elevation}px ${elevation * 2}px rgba(0, 0, 0, 0.2)`,
+      }),
+      ...(opacity !== undefined && { opacity }),
+      ...(overflow && { overflow }),
+      ...(transform && { transform }),
+      ...(transition && { transition }),
 
-  // Build class names
-  const classNames = [
-    "rn-view",
-    variant && `rn-view--${variant}`,
-    safeArea && "rn-view--safe-area",
-    center && "rn-view--center",
-    flexDirection === "row" && "rn-view--row",
-    fullWidth && "rn-view--full-width",
-    fullHeight && "rn-view--full-height",
-    isMobile && mobileClassName,
-    isTablet && tabletClassName,
-    isDesktop && desktopClassName,
-    className,
-  ].filter(Boolean);
+      // Position styles
+      ...(position && { position }),
+      ...(top !== undefined && { top }),
+      ...(left !== undefined && { left }),
+      ...(right !== undefined && { right }),
+      ...(bottom !== undefined && { bottom }),
+      ...(zIndex !== undefined && { zIndex }),
 
-  return (
-    <div
-      className={classNames.join(" ")}
-      style={dynamicStyles}
-      data-testid={dataTestId}
-      {...otherProps}
-    >
-      {children}
-    </div>
-  );
-}
+      // Fit content styles
+      ...(fitContent && {
+        width: "fit-content",
+        height: "fit-content",
+        minWidth: "min-content",
+        minHeight: "min-content",
+        maxWidth: "max-content",
+        maxHeight: "max-content",
+      }),
+
+      // Custom styles
+      ...style,
+    };
+
+    // Build class names
+    const classNames = [
+      "rn-view",
+      variant && `rn-view--${variant}`,
+      safeArea && "rn-view--safe-area",
+      center && "rn-view--center",
+      flexDirection === "row" && "rn-view--row",
+      fullWidth && "rn-view--full-width",
+      fullHeight && "rn-view--full-height",
+      isMobile && mobileClassName,
+      isTablet && tabletClassName,
+      isDesktop && desktopClassName,
+      className,
+    ].filter(Boolean);
+
+    return (
+      <div
+        ref={ref}
+        className={classNames.join(" ")}
+        style={dynamicStyles}
+        data-testid={dataTestId}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        {...otherProps}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+
+View.displayName = "View";
+
+export default View;

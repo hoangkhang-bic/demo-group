@@ -29,7 +29,7 @@ const academicCommunityMockData = {
       color: "#2196f3",
       memberCount: 22,
       isExpanded: false,
-      subGroups: [
+      groups: [
         {
           id: "ai-research",
           name: "AI Research Lab",
@@ -112,7 +112,7 @@ const academicCommunityMockData = {
         { ...getUser(0), role: "Masters Student" },
         { ...getUser(1), role: "Administrative Assistant" }
       ],
-      subGroups: [
+      groups: [
         {
           id: "applied-math",
           name: "Applied Mathematics",
@@ -122,7 +122,7 @@ const academicCommunityMockData = {
           memberCount: 5,
           parentId: "math-dept",
           isExpanded: false,
-          subGroups: [
+          groups: [
             {
               id: "data-science",
               name: "Data Science",
@@ -179,7 +179,7 @@ const academicCommunityMockData = {
       color: "#795548",
       memberCount: 7,
       isExpanded: false,
-      subGroups: [
+      groups: [
         {
           id: "coding-club",
           name: "Coding Club",

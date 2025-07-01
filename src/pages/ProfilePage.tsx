@@ -3,6 +3,9 @@ import PageAndroidTransition from "@/components/wrapper-transistion/page.android
 import SafeAreaView from "@/components/seft-area-view/seft-area-view";
 import View from "@/components/View/View";
 import { useEffect } from "react";
+import Image from "@/components/Image/Image";
+import Profile from "@/assets/images/profile_image.png";
+import { TopHeaderWeb } from "./TopHeader";
 
 export const ProfilePage = () => {
   useEffect(() => {
@@ -16,11 +19,21 @@ export const ProfilePage = () => {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: "red",
         }}
       >
-        <View flex={1} backgroundColor={"red"} height={"100%"}>
-          <p>profile page</p>
+        <TopHeaderWeb />
+        <View
+          flex={1}
+          height={"100%"}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Image
+            source={Profile}
+            resizeMode="stretch"
+            height={"100%"}
+            width={"100%"}
+          />
         </View>
       </SafeAreaView>
     </PageAndroidTransition>
