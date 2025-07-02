@@ -6,9 +6,11 @@ import { useNavigate } from "react-router";
 import { Button } from "@/components/button/button";
 import { useIsDesktop, useIsMobile } from "@/hooks/useMediaQuery";
 import { useCommunitiesStore } from "@/store/communitiesStore";
-import { CreateGroupData, useCreateGroup } from "@/services/group-services";
+import { CreateGroupParams, useCreateGroup } from "@/services/group-services";
+import { Community, Group } from "@/services/communities-services";
+import { Touchable } from "@/components/touchable/touchable";
 
-interface GroupFormData extends Omit<CreateGroupData, "parentCommunityId"> {
+interface GroupFormData extends Omit<CreateGroupParams, "parentCommunityId"> {
   parentCommunityId?: string;
 }
 
@@ -38,11 +40,18 @@ const defaultIcons = [
   "🎭",
 ];
 
-export const GroupCreate = () => {
+export const GroupCreate = ({
+  parentGroup,
+  rootCommunity,
+  onClose,
+}: {
+  parentGroup: Group | undefined;
+  rootCommunity: Community | undefined;
+  onClose: () => void;
+}) => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const isMobile = useIsMobile();
-  const { communities } = useCommunitiesStore();
   const createGroupMutation = useCreateGroup();
 
   const [formData, setFormData] = useState<GroupFormData>({
@@ -51,17 +60,22 @@ export const GroupCreate = () => {
     icon: defaultIcons[0],
     color: defaultColors[0],
     type: "public",
+    parentId: parentGroup?.id,
   });
 
-  const handleSubmit = async () => {
-    if (!formData.parentCommunityId) return;
-
+  const handleSubmit = async ({ isMobile }: { isMobile: boolean }) => {
+    if (!formData.parentId) return;
     try {
       await createGroupMutation.mutateAsync({
-        ...formData,
-        parentCommunityId: formData.parentCommunityId,
+        data: formData,
+        parentCommunityId: rootCommunity?.id,
+        parentGroupId: parentGroup?.id,
       });
-      navigate(-1); // Go back to previous page on success
+      if (isMobile) {
+        navigate(-1); // Go back to previous page on success
+      } else {
+        onClose();
+      }
     } catch (error) {
       console.error("Failed to create group:", error);
       // Here you would typically show an error message to the user
@@ -81,23 +95,24 @@ export const GroupCreate = () => {
             htmlFor="parentCommunity"
             className="block text-sm font-medium text-gray-700"
           >
-            Parent Community
+            Parent Group
+            <View flexDirection="row" gap={10}>
+              {rootCommunity && (
+                <View key={rootCommunity.id}>
+                  <h1 className="text-xl font-bold text-gray-500">
+                    {rootCommunity.name}
+                  </h1>
+                </View>
+              )}
+              {parentGroup && (
+                <View key={parentGroup.id}>
+                  <h1 className="text-xl font-bold text-gray-500">
+                    {parentGroup.name}
+                  </h1>
+                </View>
+              )}
+            </View>
           </label>
-          <select
-            id="parentCommunity"
-            value={formData.parentCommunityId}
-            onChange={(e) =>
-              handleInputChange("parentCommunityId", e.target.value)
-            }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">Select a community</option>
-            {communities.map((community) => (
-              <option key={community.id} value={community.id}>
-                {community.name}
-              </option>
-            ))}
-          </select>
         </View>
 
         {/* Group Name */}
@@ -113,7 +128,7 @@ export const GroupCreate = () => {
             id="name"
             value={formData.name}
             onChange={(e) => handleInputChange("name", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
             placeholder="Enter group name"
             required
           />
@@ -131,7 +146,7 @@ export const GroupCreate = () => {
             id="description"
             value={formData.description}
             onChange={(e) => handleInputChange("description", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px] bg-white"
             placeholder="Describe your group"
             required
           />
@@ -206,30 +221,49 @@ export const GroupCreate = () => {
               />
               <span>Private</span>
             </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                checked={formData.type === "secret"}
+                onChange={() => handleInputChange("type", "secret")}
+                className="text-purple-600 focus:ring-purple-500"
+              />
+              <span>Secret</span>
+            </label>
           </View>
         </View>
 
         {/* Action Buttons */}
         <View flexDirection="row" gap={12} className="mt-6">
-          <Button
-            variant="outline"
-            onPress={() => navigate(-1)}
-            className="flex-1"
+          <Touchable
+            fullWidth
+            style={{
+              height: 60,
+              borderRadius: 10,
+              backgroundColor: "gray",
+            }}
+            onPress={() => {
+              onClose();
+            }}
+            className="flex-1 bg-gray-200"
           >
             Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onPress={handleSubmit}
-            className="flex-1"
+          </Touchable>
+          <Touchable
+            fullWidth
+            style={{
+              height: 60,
+              borderRadius: 10,
+              backgroundColor: "primary",
+            }}
+            onPress={() => handleSubmit({ isMobile: isMobile || false })}
+            className="flex-1 bg-primary"
             disabled={
-              !formData.name ||
-              !formData.description ||
-              !formData.parentCommunityId
+              !formData.name || !formData.description || !formData.parentId
             }
           >
             Create Group
-          </Button>
+          </Touchable>
         </View>
       </div>
     </View>
@@ -244,8 +278,16 @@ export const GroupCreate = () => {
     </View>
   ) : (
     <PageAndroidTransition disableTransition={true}>
-      <MbHeader title="Create Group" onBackClick={() => navigate(-1)} />
-      {content}
+      <MbHeader
+        title="Create Group"
+        onBackClick={() => navigate(-1)}
+        style={{
+          height: "var(--top-header-height-mobile)",
+        }}
+      />
+      <View flex={1} className="max-w-3xl mx-auto p-4 md:p-6 overflow-auto">
+        {content}
+      </View>
     </PageAndroidTransition>
   );
 };

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { allCommunities, getGroupById, getListCommunities } from './mock-communities-index';
+import { allCommunities, createNewGroup, getGroupById, getListCommunities} from './mock-communities-index';
 import { Community, Group } from './communities-services';
 
 export interface GroupMember {
@@ -9,13 +9,13 @@ export interface GroupMember {
   avatar?: string;
 }
 
-export interface CreateGroupData {
+export interface CreateGroupParams extends Partial<Group> {
   name: string;
   description: string;
   icon: string;
   color: string;
-  type: "public" | "private";
-  parentCommunityId: string;
+  type: "public" | "private" | "secret";
+  parentId?: string;
 }
 
 // Mock data
@@ -74,7 +74,7 @@ export const useGroupList = () => {
   });
 };
 
-export const createGroup = async (data: CreateGroupData): Promise<Group> => {
+export const createGroup = async (data: CreateGroupParams, parentCommunityId?: string, parentGroupId?: string): Promise<Group> => {
   await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
   
   // In a real app, this would be an API call
@@ -85,14 +85,15 @@ export const createGroup = async (data: CreateGroupData): Promise<Group> => {
     icon: data.icon,
     color: data.color,
     type: data.type,
-    parentId: data.parentCommunityId,
+    parentId: data.parentId,
     memberCount: 1,
     members: [],
     avatarUrl: data.icon,
     isExpanded: false,
     groups: [],
   };
-  
+   
+  createNewGroup(newGroup,parentCommunityId, parentGroupId);
   return newGroup;
 };
 
@@ -100,7 +101,15 @@ export const useCreateGroup = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: createGroup,
+    mutationFn:({
+      data,
+      parentCommunityId,
+      parentGroupId,
+    }: {
+      data: CreateGroupParams;
+      parentCommunityId?: string;
+      parentGroupId?: string;
+    }) => createGroup(data, parentCommunityId, parentGroupId),
     onSuccess: (newGroup) => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: groupKeys.lists() });

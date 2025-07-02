@@ -189,7 +189,7 @@ export const useCommunityData = (
 
 export const useGetCommunityById = (
   communityId: string, 
-  options: Omit<UseQueryOptions<Group, Error>, 'queryKey' | 'queryFn' | 'enabled'> = {}
+  options: Omit<UseQueryOptions<Community, Error>, 'queryKey' | 'queryFn' | 'enabled'> = {}
 ) => {
   return useQuery({
     queryKey: communityKeys.detail(communityId),
