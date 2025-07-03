@@ -76,6 +76,8 @@ interface ImageProps
   // Caching options
   disableCache?: boolean;
   cacheKey?: string;
+  // Cross-origin behavior
+  crossOrigin?: "anonymous" | "use-credentials" | "";
   // Event handlers
   onLoadStart?: () => void;
   onLoad?: () => void;
@@ -104,6 +106,7 @@ const Image: React.FC<ImageProps> = ({
   lazyLoadThreshold = 0.1,
   disableCache = false,
   cacheKey,
+  crossOrigin,
   onLoadStart,
   onLoad,
   onError,
@@ -540,6 +543,9 @@ const Image: React.FC<ImageProps> = ({
     <img
       src={isInView ? currentSource : undefined}
       alt={alt}
+      loading="lazy"
+      decoding="async"
+      crossOrigin={crossOrigin}
       className={classNames.join(" ")}
       style={inlineStyles}
       onLoad={handleLoad}

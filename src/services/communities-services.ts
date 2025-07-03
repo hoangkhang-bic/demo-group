@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
-import { allCommunities, getCommunitiesWithLength, getMockCommunityById, getUserCommunities } from '@services/mock-communities-index';
+import { allCommunities, getCommunitiesWithLength, getListCommunities, getMockCommunityById, getUserCommunities } from '@services/mock-communities-index';
 
 // Types
 export interface GroupMember {
@@ -208,6 +208,18 @@ export const useCommunitiesWithLength = (
     queryKey: communityKeys.withLength(length),
     queryFn: () => fetchCommunitiesWithLength(length),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    ...options
+  });
+};
+
+
+export const useGetListCommunities = (
+  options: Omit<UseQueryOptions<Group[], Error>, 'queryKey' | 'queryFn'> = {}
+) => {
+  return useQuery({
+    queryKey: communityKeys.all,
+    queryFn: getListCommunities,
+    staleTime: 5 * 60 * 1000, // 5 minutes  
     ...options
   });
 };

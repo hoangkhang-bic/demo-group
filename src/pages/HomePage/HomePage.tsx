@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Page from "@/components/page/page";
 import TopHeader from "@/components/bic-components/top-header/top-header";
 import { BottomSheet } from "react-spring-bottom-sheet";
@@ -16,6 +16,8 @@ import { useCommunitiesWithLength } from "@/services/communities-services";
 import { CommunitiesItem } from "@pages/CommunitiesPage/component/commuinities-item";
 import { useIsMobile } from "@/hooks/useMediaQuery";
 import { TopHeaderWeb } from "../TopHeader";
+import { useUserInfo } from "@/services/user-services";
+import { useUserData } from "@/store/userStore";
 
 const communities = [
   {
@@ -76,33 +78,17 @@ const BottomSheetExample: React.FC<{
 
 export const HomePage: React.FC = () => {
   const { data: communities } = useCommunitiesWithLength(10);
+  const { user } = useUserData();
 
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
 
   // Handler functions for TopHeader
-  const handleMenuClick = () => {
-    navigate("/pin-communities");
-  };
-  const handleHomeClick = () => {
-    navigate("/home", { replace: true });
-  };
-  const handleCommunitiesClick = () => {
-    navigate("/communities", { replace: true });
-  };
-  const handleNotificationClick = () => {
-    navigate("/notification", { replace: true });
-  };
-  const handleProfileClick = () => {
-    navigate("/profile", { replace: true });
-  };
-  const handleMarketClick = () => {
-    navigate("/market", { replace: true });
-  };
-  const handleChatClick = () => {
-    window.open("https://www.google.com", "_blank");
-  };
+  useEffect(() => {
+    if (isMobile) {
+      console.log("user", user?.name);
+    }
+  }, [isMobile]);
   return (
     <PageAndroidTransition
       disableTransition={true}

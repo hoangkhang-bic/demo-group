@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CommunitiesItem } from "./commuinities-item";
 import ListView from "@components/virtual-list/virtual-list";
 import {
   Community,
-  useCommunitiesWithLength,
+  useGetListCommunities,
+  useUserCommunities,
 } from "@services/communities-services";
-import View from "@/components/View/View";
 import { useNavigate } from "react-router";
 
 export const ListCommunities = () => {
-  const { data: communities } = useCommunitiesWithLength(20);
+  const {
+    data: communitiesData,
+    isLoading,
+    refetch,
+  } = useGetListCommunities({
+    refetchOnWindowFocus: false,
+  });
+  console.log("communitiesData", isLoading);
   const navigate = useNavigate();
   const renderItem = ({ item }: { item: Community }) => {
     return (
@@ -26,7 +33,7 @@ export const ListCommunities = () => {
   return (
     <ListView
       keyExtractor={(item: Community) => item.id}
-      data={communities || []}
+      data={communitiesData || []}
       renderItem={renderItem}
       rowSpacing={20}
     />
