@@ -36,6 +36,7 @@ export const BodyCommunitiesDetailWeb = ({
               rootGroup={community}
               groups={community?.groups || []}
               onCreateGroup={(group) => {
+                console.log("group ====>>>", group);
                 setParentGroup(group);
                 modalCreateGroupRef.current.open();
               }}

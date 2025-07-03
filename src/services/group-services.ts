@@ -16,6 +16,7 @@ export interface CreateGroupParams extends Partial<Group> {
   color: string;
   type: "public" | "private" | "secret";
   parentId?: string;
+  avatar?: string; // URL or base64 string for the group avatar
 }
 
 // Mock data
@@ -88,12 +89,12 @@ export const createGroup = async (data: CreateGroupParams, parentCommunityId?: s
     parentId: data.parentId,
     memberCount: 1,
     members: [],
-    avatarUrl: data.icon,
+    avatarUrl: data.avatar || data.icon, // Use avatar if provided, fallback to icon
     isExpanded: false,
     groups: [],
   };
    
-  createNewGroup(newGroup,parentCommunityId, parentGroupId);
+  createNewGroup(newGroup, parentCommunityId, parentGroupId);
   return newGroup;
 };
 

@@ -257,7 +257,7 @@ export const genListCommunities = (length: number) => {
     "Creative Coders",
     "Tech Visionaries"
   ];
-
+  
   const communityIcons = ["🚀", "💻", "🎯", "⚡", "🔥", "🌟", "💡", "🎨", "🛠️", "🎭"];
   const communityColors = [
     "#34a853", "#4285f4", "#ea4335", "#fbbc05", "#9c27b0", 

@@ -5,7 +5,7 @@ import { Touchable } from "../../components/touchable/touchable";
 import { FaSearch, FaPlus, FaCheck, FaMapPin } from "react-icons/fa";
 import { useGetTopHeaderInset } from "../../hooks/useSafeAreaInsets";
 import { useNavigate } from "react-router";
-import { Group } from "@/services/group-services";
+import { Group } from "@/services/communities-services";
 
 interface Community {
   id: string;

@@ -133,7 +133,11 @@ const nestedGroupDetail = ({
 
   return (
     <View className="flex flex-col gap-2" flexWrap="wrap" width="100%">
-      <RootGroupView key={rootGroup?.id} groups={rootGroup}>
+      <RootGroupView
+        key={rootGroup?.id}
+        groups={rootGroup}
+        onCreateGroup={onCreateGroup}
+      >
         <NestedGroupView
           onCreateGroup={onCreateGroup}
           groups={rootGroup?.groups || []}

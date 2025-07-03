@@ -14,6 +14,7 @@ import CommunitiesDetail from "@pages/CommunitiesDetail/communities-detail";
 import Communities from "@pages/CommunitiesPage/Communities";
 import GroupDetail from "@/pages/Groups/GroupDetail";
 import Groups from "@/pages/GroupsPage/GroupPage.mb";
+import { GroupCreatePage } from "@/pages/Groups/GroupCreate.mb";
 
 // Define routes using createRoutesFromElements for React Router v7a
 const router = () => {
@@ -37,6 +38,7 @@ const router = () => {
       <Route path="/communities/:id" element={<CommunitiesDetail />} />
       <Route path="/groups" element={<Groups />} />
       <Route path="/groups/:id" element={<GroupDetail />} />
+      <Route path="/groups/create" element={<GroupCreatePage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

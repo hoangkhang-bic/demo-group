@@ -5,7 +5,7 @@ export default function NotFoundPage() {
   return (
     <PageAndroidTransition>
       <MbHeader title="Not Found" />
-      <div>NotFoundPage</div>
+      <div>In development</div>
     </PageAndroidTransition>
   );
 }

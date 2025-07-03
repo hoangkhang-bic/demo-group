@@ -10,7 +10,32 @@ export const allCommunities = [
   academicCommunity,
   gamingCommunity
 ];
-
+const findGroupById = (data: any, targetId: string) => {
+  const searchInGroup = (group: any): any => {
+    // Check if current group matches
+    if (group.id === targetId) {
+      return group;
+    }
+    
+    // Search in subgroups if they exist
+    if (group.groups && group.groups.length > 0) {
+      for (const subGroup of group.groups) {
+        const found = searchInGroup(subGroup);
+        if (found) return found;
+      }
+    }
+    
+    return null;
+  }
+  
+  // Search through all top-level items
+  for (const item of data) {
+    const found = searchInGroup(item);
+    if (found) return found;
+  }
+  
+  return null;
+}
 class  CommunityData {
   static allCommunities = [
     techCommunity,
@@ -34,12 +59,9 @@ class  CommunityData {
       ...data
     };
   };
-  static getGroupById = (groupId: string, rootCommunityId?: string) => {
-    const parent = this.allCommunities.find(e=>e.id === rootCommunityId);
-    const parrentGroups = parent?.groups?.flat(10);
-    const group = parrentGroups?.find(e=>e.id === groupId);
-    return group;
-  };
+
+  
+ 
   static createCommunity = (data: Partial<Community>): Community => { 
     if (!data.name) {
       throw new Error("Name is required");
@@ -58,19 +80,31 @@ class  CommunityData {
     this.allCommunities.push(newCommunity as unknown as Community);
     return newCommunity as unknown as Community;
   }
+  static getGroupById = (groupId: string, rootCommunityId?: string) => {
+    const parent = this.allCommunities.find(e=>e.id === rootCommunityId);
+    const group = findGroupById(parent?.groups || [], groupId);
+    return group;
+  };
   static CreateGroup = (data: Partial<Group>, parentCommunity?: string, {
     parentGroupId,
   }: {
     parentGroupId?: string;
   } = {}): void => {
+    if(parentCommunity === parentGroupId) {
+      const community = this.getCommunityById(parentCommunity || "");
+      if(community) {
+        community.groups?.push(data as unknown as Group);
+      }
+      return;
+    }
     if (parentGroupId) {
-      console.log("parentGroupId", parentGroupId);
-      console.log("parentCommunity", parentCommunity);
       const parentGroup = this.getGroupById(parentGroupId, parentCommunity);
-      
       if (parentGroup) {
-        console.log("parentGroup", parentGroup);
-        parentGroup?.groups?.push(data as unknown as Group);
+        if(parentGroup?.groups) {
+          parentGroup?.groups?.push(data as unknown as Group);
+        } else {
+          parentGroup.groups = [data as unknown as Group];
+        }
       } else {
         throw new Error("Parent group not found");
       }

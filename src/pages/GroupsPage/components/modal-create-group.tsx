@@ -56,7 +56,7 @@ export const ModalCreateGroup = forwardRef<
           <View
             flex={1}
             backgroundColor="white"
-            overflow="hidden"
+            overflow="auto"
             style={{ height: "calc(100% - 76px)" }}
           >
             {children}

@@ -40,6 +40,14 @@ export default function GroupsPageWeb() {
               <GroupInner
                 rootGroup={community as unknown as Group}
                 groups={community?.groups || []}
+                onCreateGroup={(group) => {
+                  navigate("/groups/create", {
+                    state: {
+                      group: group,
+                      community: community,
+                    },
+                  });
+                }}
               />
             )}
           </View>

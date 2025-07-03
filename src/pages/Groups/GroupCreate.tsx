@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import MbHeader from "@/components/bic-components/mb-header/mb-header";
 import View from "@/components/View/View";
 import PageAndroidTransition from "@components/wrapper-transistion/page.android.transition";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/button/button";
 import { useIsDesktop, useIsMobile } from "@/hooks/useMediaQuery";
-import { useCommunitiesStore } from "@/store/communitiesStore";
 import { CreateGroupParams, useCreateGroup } from "@/services/group-services";
 import { Community, Group } from "@/services/communities-services";
 import { Touchable } from "@/components/touchable/touchable";
+import Avatar, { AvatarPlaceholder } from "@/components/Image/avatar";
 
 interface GroupFormData extends Omit<CreateGroupParams, "parentCommunityId"> {
   parentCommunityId?: string;
+  avatar?: string;
 }
 
 const defaultColors = [
@@ -45,14 +46,15 @@ export const GroupCreate = ({
   rootCommunity,
   onClose,
 }: {
-  parentGroup: Group | undefined;
-  rootCommunity: Community | undefined;
-  onClose: () => void;
+  parentGroup?: Group | undefined;
+  rootCommunity?: Community | undefined;
+  onClose?: () => void;
 }) => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const isMobile = useIsMobile();
   const createGroupMutation = useCreateGroup();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<GroupFormData>({
     name: "",
@@ -61,6 +63,7 @@ export const GroupCreate = ({
     color: defaultColors[0],
     type: "public",
     parentId: parentGroup?.id,
+    avatar: "",
   });
 
   const handleSubmit = async ({ isMobile }: { isMobile: boolean }) => {
@@ -74,7 +77,7 @@ export const GroupCreate = ({
       if (isMobile) {
         navigate(-1); // Go back to previous page on success
       } else {
-        onClose();
+        onClose?.();
       }
     } catch (error) {
       console.error("Failed to create group:", error);
@@ -86,9 +89,59 @@ export const GroupCreate = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        handleInputChange("avatar", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const content = (
     <View flex={1} className="max-w-3xl mx-auto p-4 md:p-6">
       <div className="space-y-6">
+        {/* Avatar Upload */}
+        <View className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Group Avatar
+          </label>
+          <View className="flex items-center justify-center">
+            <Touchable onPress={handleAvatarClick}>
+              {formData.avatar ? (
+                <Avatar
+                  source={formData.avatar}
+                  size="xl"
+                  alt="Group avatar"
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                />
+              ) : (
+                <AvatarPlaceholder
+                  size="xl"
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                />
+              )}
+            </Touchable>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+          </View>
+          <p className="text-sm text-gray-500 text-center mt-2">
+            Click to upload group avatar
+          </p>
+        </View>
+
         {/* Parent Community Selection */}
         <View className="space-y-2">
           <label
@@ -243,7 +296,7 @@ export const GroupCreate = ({
               backgroundColor: "gray",
             }}
             onPress={() => {
-              onClose();
+              onClose?.();
             }}
             className="flex-1 bg-gray-200"
           >
