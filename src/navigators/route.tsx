@@ -15,6 +15,7 @@ import Communities from "@pages/CommunitiesPage/Communities";
 import GroupDetail from "@/pages/Groups/GroupDetail";
 import Groups from "@/pages/GroupsPage/GroupPage.mb";
 import { GroupCreatePage } from "@/pages/Groups/GroupCreate.mb";
+import SafeAreaView from "@/components/seft-area-view/seft-area-view";
 
 // Define routes using createRoutesFromElements for React Router v7a
 const router = () => {

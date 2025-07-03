@@ -5,6 +5,7 @@ import PageAndroidTransition from "@components/wrapper-transistion/page.android.
 import { useNavigate } from "react-router";
 import { Button } from "@/components/button/button";
 import { useIsDesktop, useIsMobile } from "@/hooks/useMediaQuery";
+import SafeAreaView from "@/components/seft-area-view/seft-area-view";
 
 interface CommunityFormData {
   name: string;
@@ -217,11 +218,14 @@ export const CreateCommunityPage = () => {
     </View>
   ) : (
     <PageAndroidTransition disableTransition={true}>
-      <MbHeader
-        title="Create Community"
-        onBackClick={() => navigate("/communities")}
-      />
-      {content}
+      <SafeAreaView>
+        <MbHeader
+          title="Create Community"
+          fixed={true}
+          onBackClick={() => navigate("/communities")}
+        />
+        {content}
+      </SafeAreaView>
     </PageAndroidTransition>
   );
 };

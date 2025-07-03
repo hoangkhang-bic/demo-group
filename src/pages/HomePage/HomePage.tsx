@@ -18,6 +18,7 @@ import { useIsMobile } from "@/hooks/useMediaQuery";
 import { TopHeaderWeb } from "../TopHeader";
 import { useUserInfo } from "@/services/user-services";
 import { useUserData } from "@/store/userStore";
+import RightComponent from "./component/RighComponent";
 
 const communities = [
   {
@@ -100,15 +101,9 @@ export const HomePage: React.FC = () => {
       <View height={`var(--top-header-height)`}>
         <TopHeaderWeb />
       </View>
-      <View flexDirection="row" flex={1}>
+      <View flexDirection="row" flex={1} overflow="auto">
         {!isMobile && (
-          <View
-            flex={1}
-            overflow="hidden"
-            padding={10}
-            height={`calc(100vh - var(--top-header-height))`}
-            className="overflow-y-auto"
-          >
+          <View height={`90%`} overflow="auto" padding={10} fitContent>
             <CommunitiesSidebar
               communities={communities}
               onSearch={() => {}}
@@ -117,11 +112,15 @@ export const HomePage: React.FC = () => {
             />
           </View>
         )}
-        <View flex={3}>
+        <View flex={3} overflow="auto" width={`100%`} fullHeight>
           <NewsFeeds />
         </View>
+        {!isMobile && (
+          <View flex={1} overflow="auto" width={`100%`} fullHeight padding={10}>
+            <RightComponent />
+          </View>
+        )}
       </View>
-
       <BottomSheetExample open={open} onDismiss={() => setOpen(false)} />
     </PageAndroidTransition>
   );

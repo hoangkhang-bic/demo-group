@@ -9,6 +9,7 @@ import { CreateGroupParams, useCreateGroup } from "@/services/group-services";
 import { Community, Group } from "@/services/communities-services";
 import { Touchable } from "@/components/touchable/touchable";
 import Avatar, { AvatarPlaceholder } from "@/components/Image/avatar";
+import SafeAreaView from "@/components/seft-area-view/seft-area-view";
 
 interface GroupFormData extends Omit<CreateGroupParams, "parentCommunityId"> {
   parentCommunityId?: string;
@@ -331,16 +332,18 @@ export const GroupCreate = ({
     </View>
   ) : (
     <PageAndroidTransition disableTransition={true}>
-      <MbHeader
-        title="Create Group"
-        onBackClick={() => navigate(-1)}
-        style={{
-          height: "var(--top-header-height-mobile)",
-        }}
-      />
-      <View flex={1} className="max-w-3xl mx-auto p-4 md:p-6 overflow-auto">
-        {content}
-      </View>
+      <SafeAreaView>
+        <MbHeader
+          title="Create Group"
+          onBackClick={() => navigate(-1)}
+          style={{
+            height: "var(--top-header-height-mobile)",
+          }}
+        />
+        <View flex={1} className="max-w-3xl mx-auto p-4 md:p-6 overflow-auto">
+          {content}
+        </View>
+      </SafeAreaView>
     </PageAndroidTransition>
   );
 };

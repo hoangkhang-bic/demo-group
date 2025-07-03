@@ -6,6 +6,7 @@ import {
   getSafeAreaInsets,
   getPlatform,
 } from "@/utils/platform";
+import View from "../View/View";
 
 interface SafeAreaViewProps {
   children: ReactNode;
@@ -117,12 +118,15 @@ export default function SafeAreaView({
     .join(" ");
 
   return (
-    <div
+    <View
+      flex={1}
+      height={`calc(100vh - ${insets.top}px - ${insets.bottom}px)`}
+      width={`100vw`}
       className={safeAreaClasses}
       style={safeAreaStyle}
       data-platform={platform}
     >
       {children}
-    </div>
+    </View>
   );
 }

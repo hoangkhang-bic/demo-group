@@ -3,6 +3,22 @@
 export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "./index.html", "./public/**/*.{js,jsx,ts,tsx}"],
   theme: {
+    extend: {
+      keyframes: {
+        'ios-header-in': {
+          from: { opacity: '0', transform: 'translateY(-8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' }
+        },
+        'android-header-in': {
+          from: { opacity: '0', transform: 'translateY(-4px)' },
+          to: { opacity: '1', transform: 'translateY(0)' }
+        }
+      },
+      animation: {
+        'ios-header-in': 'ios-header-in 0.4s cubic-bezier(0.32, 0.72, 0, 1)',
+        'android-header-in': 'android-header-in 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+      }
+    },
     colors: {
       primary: {
         DEFAULT: 'var(--color-primary)',

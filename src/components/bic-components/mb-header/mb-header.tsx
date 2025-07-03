@@ -4,7 +4,6 @@ import { useMediaQuery } from "react-responsive";
 import { useNavigate } from "react-router-dom";
 import HeaderBar from "@/components/header-bar/header-bar";
 import View from "@/components/View/View";
-import "./mb-header.css";
 
 interface MbHeaderProps {
   title?: string;
@@ -41,55 +40,74 @@ export default function MbHeader({
   };
 
   // Apply platform-specific animations
-  useEffect(() => {
-    if (!headerRef.current) return;
+  const animationClass = isIOS
+    ? "animate-ios-header-in"
+    : "animate-android-header-in";
 
-    if (isIOS) {
-      headerRef.current.classList.add("mb-header--ios");
-    } else if (isAndroid) {
-      headerRef.current.classList.add("mb-header--android");
-    }
+  const headerClasses = `
+    relative w-full z-[1000]
+    ${transparent ? "bg-transparent border-b-0" : ""}
+    ${fixed ? "fixed top-0 left-0 right-0" : ""}
+    ${className}
+  `.trim();
 
-    // Add entrance animation
-    headerRef.current.classList.add("mb-header--animate-in");
-  }, [isIOS, isAndroid]);
+  const containerClasses = `
+    flex items-center justify-between w-full relative
+    min-h-[48px] md:min-h-[56px] lg:min-h-[64px]
+    ${animationClass}
+  `.trim();
+
+  const backButtonClasses = `
+    flex items-center justify-center w-8 h-8 rounded-full cursor-pointer mr-2
+    transition-colors duration-200 ease-in-out
+    hover:bg-gray-100 active:bg-gray-200
+  `.trim();
+
+  const backIconClasses = `
+    text-2xl text-gray-900
+    ${isIOS ? "-ml-1" : "ml-0"}
+  `.trim();
+
+  const titleClasses = `
+    flex-1 flex items-center justify-center overflow-hidden
+    absolute inset-0 pointer-events-none
+  `.trim();
+
+  const titleTextClasses = `
+    m-0 text-base font-semibold whitespace-nowrap overflow-hidden text-ellipsis text-gray-900
+    md:text-lg
+  `.trim();
 
   return (
     <HeaderBar
-      className={`mb-header ${transparent ? "mb-header--transparent" : ""} ${
-        fixed ? "mb-header--fixed" : ""
-      } ${className}`}
+      className={headerClasses}
       style={style}
       showShadow={!transparent}
       iosShadow={!transparent}
       androidElevation={transparent ? 0 : 2}
     >
-      <div ref={headerRef} className="mb-header__container">
+      <div ref={headerRef} className={containerClasses}>
         {showBackButton && (
           <div
-            className="mb-header__back-button"
+            className={backButtonClasses}
             onClick={handleBackClick}
             role="button"
             aria-label="Back"
           >
-            <IoChevronBackOutline
-              className={`mb-header__back-icon ${
-                isIOS
-                  ? "mb-header__back-icon--ios"
-                  : "mb-header__back-icon--android"
-              }`}
-            />
+            <IoChevronBackOutline className={backIconClasses} />
           </div>
         )}
 
         {title && (
-          <div className="mb-header__title">
-            <h1 className="mb-header__title-text">{title}</h1>
+          <div className={titleClasses}>
+            <h1 className={titleTextClasses}>{title}</h1>
           </div>
         )}
 
         {rightComponent && (
-          <div className="mb-header__right">{rightComponent}</div>
+          <div className="flex items-center justify-end ml-2">
+            {rightComponent}
+          </div>
         )}
       </div>
     </HeaderBar>

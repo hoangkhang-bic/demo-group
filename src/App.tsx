@@ -6,6 +6,7 @@ import "./css/style.css";
 /* Import our router */
 import AppRouter from "@navigators/route";
 import { BrowserRouter } from "react-router";
+import SafeAreaView from "./components/seft-area-view/seft-area-view";
 
 // Create a client
 const queryClient = new QueryClient({

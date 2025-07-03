@@ -110,8 +110,8 @@ export const HeaderMobile: React.FC<HeaderMobileProps> = ({
             <View
               className="w-[var(--avatar-size-mobile)] h-[var(--avatar-size-mobile)]"
               borderRadius={10}
-              backgroundColor="red"
               overflow="hidden"
+              backgroundColor="var(--color-gray-100)"
               borderColor="var(--color-gray-100)"
               borderWidth={2}
             >

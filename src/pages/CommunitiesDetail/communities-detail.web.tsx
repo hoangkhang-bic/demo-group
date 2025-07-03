@@ -13,22 +13,16 @@ import {
 } from "@/services/communities-services";
 import deepNestedCommunityMockData from "@/services/mock-communities-deep-nested";
 import { BodyCommunitiesDetailWeb } from "./component/body.web";
+import { TopHeaderWeb } from "../TopHeader";
 export const CommunitiesDetailWeb = () => {
   const { id } = useParams();
   const { data: community, isLoading } = useGetCommunityById(id || "");
   return (
     <div className="flex flex-1 w-full p-20 bg-gray-100">
       <div className="flex flex-col w-full rounded-lg">
-        <Header
-          communityName="Community Name"
-          memberCount={100}
-          onChatClick={() => {}}
-          onMoreClick={() => {}}
-          activeTab="timeline"
-          coverImage="https://picsum.photos/200/300"
-          avatarImage="https://picsum.photos/200/300"
-          onTabChange={() => {}}
-        />
+        <View height={`var(--top-header-height-desktop)`}>
+          <TopHeaderWeb />
+        </View>
         {isLoading && <div>Loading...</div>}
         {community && (
           <BodyCommunitiesDetailWeb

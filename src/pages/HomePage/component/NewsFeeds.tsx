@@ -27,14 +27,14 @@ export default function NewsFeeds() {
   const demoData = new Array(10).fill(0).map((_, index) => ({
     user: {
       name: `User ${index + 1}`,
-      avatar: `https://via.placeholder.com/150?text=User+${index + 1}`,
+      avatar: `https://picsum.photos/200/300`,
       timestamp: `2021-01-01`,
     },
     content: {
       text: `This is the content of the news feed ${index + 1}`,
       images: [
-        `https://via.placeholder.com/150?text=News+Feed+${index + 1}`,
-        `https://via.placeholder.com/150?text=News+Feed+${index + 1}`,
+        `https://picsum.photos/200/300`,
+        `https://picsum.photos/200/300`,
       ],
     },
     stats: {
@@ -50,12 +50,20 @@ export default function NewsFeeds() {
   }));
 
   return (
-    <SafeAreaView className="flex-1 overflow-y-auto">
+    <View
+      flex={1}
+      overflow="auto"
+      width={`100%`}
+      height={`calc(100vh - var(--top-header-height))`}
+      style={{
+        paddingBottom: "40px",
+      }}
+    >
       {demoData.map((item) => (
         <View key={item.id} padding={16}>
           <FacebookItem {...item} />
         </View>
       ))}
-    </SafeAreaView>
+    </View>
   );
 }

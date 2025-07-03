@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import "./page.android.transition.css";
+import SafeAreaView from "../seft-area-view/seft-area-view";
 
 interface PageTransitionProps {
   children: React.ReactNode;
