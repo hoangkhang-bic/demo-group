@@ -22,7 +22,7 @@
                 "firecrawl-mcp"
             ],
             "env": {
-                "FIRECRAWL_API_KEY": "fc-d0430768396f45a2b06fc8f630f7dee6"
+                "FIRECRAWL_API_KEY": ""
             }
         },
         "puppeteer": {
